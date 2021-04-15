@@ -6,6 +6,21 @@ const jwt = require('jsonwebtoken');
 const sendEmail = require('../util/sendEmail');
 const ErrorResponse = require('../util/errorResponse');
 
+//show the list of users
+const getallUsers = (req, res, next) => {
+  Auth.find()
+  .then(response => {
+      res.json({
+          success: true,
+          count: response.length,
+          data: response
+      });
+  })
+  .catch(error => {
+      res.json({message: 'An error Occured'})
+  });
+}
+
 //Register User
 const register = asyncHandler(async (req, res, next) => {
   const { firstname, lastname, email, password } = req.body;
@@ -32,6 +47,43 @@ const register = asyncHandler(async (req, res, next) => {
 
 });
 
+//Delete User
+const deleteUser = asyncHandler(async (req, res, next) => {
+  const user = await Auth.findById(req.params.id);
+
+  if (!user) {
+    return next(
+      new ErrorResponse(`user not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+
+  await user.remove();
+
+  res.status(200).json({ success: true, data: {} });
+});
+
+//update User
+const updateUser = asyncHandler(async (req, res, next) => {
+  let user = await Auth.findById(req.params.id);
+
+  if (!user) {
+    return next(
+      new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  user = await Auth.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
+
+  res.status(200).json({ success: true, data: user });
+});
+
+
+
+//Login user
 const login = asyncHandler(async (req, res, next) => {
 
   const { email, password } = req.body;
@@ -155,5 +207,5 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 
 module.exports = {
-    register, login, logout, forgotPassword, resetPassword
+    getallUsers, register, login, deleteUser,updateUser,  logout, forgotPassword, resetPassword
 };

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const asyncHandler = require('../middleware/async');
 
 //show the list of users
 const getallUsers = (req, res, next) => {
@@ -15,19 +16,18 @@ const getallUsers = (req, res, next) => {
     });
 }
 
-//Get Single User
-const getSingleUser = (req, res, next) => {
-    let userID = req.body.userID;
-    User.findById(userID)
-    .then(response => {
-        res.json({
-            success: true,
-            data: response
-        });
-    }).catch(error => {
-        res.json({message: 'An error Occured'})
-    });
-} 
+// Get single user
+const getSingleUser = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.params.id);
+  
+    if (!user) {
+      return next(
+        new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+      );
+    }
+  
+    res.status(200).json({ success: true, data: user });
+  });
 
 //Create new User
 const createUser = (req, res, next) => {
@@ -36,51 +36,52 @@ const createUser = (req, res, next) => {
         lastname: req.body.lastname,
         email: req.body.email,
         password: req.body.password,
-        dob: req.body.dob
+        dob: req.body.dob,
+        mobile: req.body.mobile
     });
     user.save()
     .then(response => {
-        res.json({success: true, message: 'User Added Successfully'})
+        res.json({success: true, message: 'User Added Successfully', data: user})
     }).catch(error=> {
         res.json({success: false, message: 'An error occured'})
     });
 }
 
-//update an user
-const updateUser = (req, res, next) => {
-    let userID = req.body.userID;
-    let updatedData = {
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        password: req.body.password,
-        dob: req.body.dob
+// Update User
+const updateUser = asyncHandler(async (req, res, next) => {
+    let user = await User.findById(req.params.id);
+  
+    if (!user) {
+      return next(
+        new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+      );
     }
-    User.findByIdAndUpdate(userID, {$set: updatedData})
-    .then(() => {
-        res.json({
-            message: 'User Updated successfully'
-        })
-    })
-    .catch(error => {
-        res.json({success: false, message: 'An error occured'})
+  
+    user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
     });
+  
+    res.status(200).json({ success: true, data: user });
+  });
 
-}
+
 
 //Delete User
-const deleteUser = (req, res, next) => {
-    let userID = req.body.userID;
-    User.findByIdAndDelete(userID)
-    .then(() => {
-        res.json({
-            message: 'User Deleted successfully'
-        })
-    })
-    .catch(error => {
-        res.json({success: false, message: 'An error occured'})
-    });
-}
+const deleteUser = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.params.id);
+  
+    if (!user) {
+      return next(
+        new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+      );
+    }
+  
+  
+    await user.remove();
+  
+    res.status(200).json({ success: true, data: {} });
+  });
 
 module.exports = {
     getallUsers,
