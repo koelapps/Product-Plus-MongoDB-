@@ -21,12 +21,7 @@ const authSchema = new Schema({
         select: false
     },
     resetPasswordToken: String,
-    resetPaswordExpire: Date,
-    confirmEmailToken: String,
-    isEmailConfirmed: {
-    type: Boolean,
-    default: false,
-  },
+    resetPaswordExpire: Date
 },  {timestamps: true});
 
 // Encrypt password using bcrypt
@@ -62,20 +57,6 @@ authSchema.methods.getResetPasswordToken = function() {
 }
 
 
-// Generate email confirm token
-authSchema.methods.generateEmailConfirmToken = function (next) {
-    // email confirmation token
-    const confirmationToken = crypto.randomBytes(20).toString('hex');
-  
-    this.confirmEmailToken = crypto
-      .createHash('sha256')
-      .update(confirmationToken)
-      .digest('hex');
-  
-    const confirmTokenExtend = crypto.randomBytes(100).toString('hex');
-    const confirmTokenCombined = `${confirmationToken}.${confirmTokenExtend}`;
-    return confirmTokenCombined;
-  };
 
 const Auth = mongoose.model('Auth', authSchema);
 module.exports =  Auth;

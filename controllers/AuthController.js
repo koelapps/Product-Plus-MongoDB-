@@ -71,6 +71,7 @@ const logout = (req, res, next) => {
       });
 }
 
+
 //forgot password
 const forgotPassword = asyncHandler(async (req, res, next) => {
   const user = await Auth.findOne({ email: req.body.email });
@@ -89,7 +90,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
     'host',
   )}/api/resetpassword/${resetToken}`;
 
-  const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
+  const message = `To reset the password copy and paste the url and make PUT request to \n\n ${resetUrl}`;
 
   try {
     await sendEmail({
@@ -110,6 +111,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   }
 });
 
+
 //Reset Passwod
 const resetPassword = asyncHandler(async (req, res, next) => {
     //Get Hashed Token
@@ -128,6 +130,8 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     sendTokenResponse(user, 200, res);
 });
 
+
+//Sending token to the cookie
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
     const token = user.getSignedJwtToken();
