@@ -26,5 +26,13 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koelapps/Product-Plus-MongoDB-.git"
+  },
+  "bugs": {
+    "url": "https://github.com/koelapps/Product-Plus-MongoDB-/issues"
+  },
+  "homepage": "https://github.com/koelapps/Product-Plus-MongoDB-#readme"
 }

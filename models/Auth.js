@@ -37,8 +37,8 @@ authSchema.pre('save', async function (next) {
 
 // Sign JWT and return
 authSchema.methods.getSignedJwtToken = function () {
-    return jwt.sign({ id: this._id }, 'AzQ,PI)0(', {
-      expiresIn: '1h',
+    return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRE,
     });
   };
 

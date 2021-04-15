@@ -119,6 +119,18 @@ const logout = (req, res, next) => {
       });
 }
 
+//get current user
+const currentUser = asyncHandler(async (req, res, next) => {
+
+  const user = req.user;
+
+  res.status(200).json({
+    success: true,
+    data: user
+  });
+});
+
+
 
 //forgot password
 const forgotPassword = asyncHandler(async (req, res, next) => {
@@ -207,6 +219,7 @@ module.exports = {
     deleteUser,
     updateUser,  
     logout, 
+    currentUser,
     forgotPassword, 
     resetPassword
 };
