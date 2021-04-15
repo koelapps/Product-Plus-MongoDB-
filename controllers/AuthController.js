@@ -7,65 +7,56 @@ const sendEmail = require('../util/sendEmail');
 const ErrorResponse = require('../util/errorResponse');
 
 //Register User
-const register = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10, function(err, hashedPass) {
-       if(err){
-           res.json({
-               error:err
-           });
-       } 
-       let user = new Auth({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        password: hashedPass
-        });
-        user.save()
-        .then(user => {
-        res.status(200).json({
-            success: true,
-            message: 'User Added Successfully'
-        });
-    })
-    .catch(error => {
-        res.status(404).json({success: false, message: `User with this mail ID is already registered`})
+const register = asyncHandler(async (req, res, next) => {
+  const { firstname, lastname, email, password } = req.body;
+
+  // Create user
+  const user = await Auth.create({
+    firstname,
+    lastname,
+    email,
+    password
+  });
+
+  await user.save().then(user => {
+    sendTokenResponse(user, 200, res);
+    res.status(200).json({
+      success: true,
+      message: 'User Added Successfully'
     });
+  })
+  .catch(error => {
+    res.status(404).json({success: false, message: `User with this mail ID is already registered`})
+});
+  
+
 });
 
-}
+const login = asyncHandler(async (req, res, next) => {
 
-//Login User
-const login = (req, res, next) => {
-    var username =  req.body.username;
-    var password = req.body.password;
- 
-    Auth.findOne({email: username})
-    .then (user => {
-        if(user){
-            bcrypt.compare(password, user.password, function(err, result) {
-                if(err){
-                    res.status(404).json({success: false, error: err});
-                }
-                if(result){
-                    let token = sendTokenResponse();
-                    res.status(200).json({
-                        success: true,
-                        message: 'Login Successful',
-                        data: user,
-                        token
-                    });
-                }else{
-                    res.status(404).json({
-                        success: false,
-                        message: 'Password does not Matched'
-                    });
-                }
-            });
-        }else{
-            res.json({message: 'No User Found', success: false});
-        }
-    })
- }
+  const { email, password } = req.body;
+
+  // Validate emil & password
+  if (!email || !password) {
+    return next(new ErrorResponse('Please provide an email and password', 400));
+  }
+
+  // Check for user
+  const user = await Auth.findOne({ email }).select('+password');
+
+  if (!user) {
+    return next(new ErrorResponse('Invalid credentials', 401));
+  }
+
+  // Check if password matches
+  const isMatch = await user.matchPassword(password);
+
+  if (!isMatch) {
+    return next(new ErrorResponse('Invalid credentials', 401));
+  }
+
+  sendTokenResponse(user, 200, res);
+});
 
 //Logout User
 const logout = (req, res, next) => {
@@ -80,43 +71,43 @@ const logout = (req, res, next) => {
       });
 }
 
-//Forgot Password
+//forgot password
 const forgotPassword = asyncHandler(async (req, res, next) => {
-    const user = await Auth.findOne({ email: req.body.email });
-  
-    if (!user) {
-      return next(new ErrorResponse('There is no user with that email', 404));
-    }
-  
-    // Get reset token
-    const resetToken = user.getResetPasswordToken();
-  
+  const user = await Auth.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new ErrorResponse('There is no user with that email', 404));
+  }
+
+  // Get reset token
+  const resetToken = user.getResetPasswordToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  // Create reset url
+  const resetUrl = `${req.protocol}://${req.get(
+    'host',
+  )}/api/resetpassword/${resetToken}`;
+
+  const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Password reset token',
+      message,
+    });
+
+    res.status(200).json({ success: true, data: 'Email sent' });
+  } catch (err) {
+    console.log(err);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
     await user.save({ validateBeforeSave: false });
-  
-    // Create reset url
-    const resetUrl = `${req.protocol}://${req.get(
-      'host',
-    )}/api/resetpassword/${resetToken}`;
-  
-    const message = `To reset the User password kindly use PUT request using this URL to \n\n ${resetUrl}`;
-  
-    try {
-      await sendEmail({
-        email: user.email,
-        subject: 'Password reset token',
-        message,
-      });
-  
-      res.status(200).json({ success: true, data: 'Email sent' });
-    } catch (err) {
-      console.log(err);
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;
-  
-      await user.save({ validateBeforeSave: false });
-  
-      return next(new ErrorResponse('Email could not be sent', 500));
-    }
+
+    return next(new ErrorResponse('Email could not be sent', 500));
+  }
 });
 
 //Reset Passwod
