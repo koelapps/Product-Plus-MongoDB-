@@ -37,14 +37,15 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  const { firstname, lastname, email, password } = req.body;
+  const { firstname, lastname, email, password, dob } = req.body;
 
   // Create user
   const user = await Auth.create({
     firstname,
     lastname,
     email,
-    password
+    password,
+    dob
   });
 
   await user.save().then(user => {

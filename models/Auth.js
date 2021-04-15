@@ -20,6 +20,9 @@ const authSchema = new Schema({
         type: String,
         select: false
     },
+    dob:{
+      type: String
+    },
     resetPasswordToken: String,
     resetPaswordExpire: Date
 },  {timestamps: true});
