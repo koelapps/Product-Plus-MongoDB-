@@ -88,19 +88,15 @@ const login = asyncHandler(async (req, res, next) => {
 
   const { email, password } = req.body;
 
-  // Validate emil & password
   if (!email || !password) {
     return next(new ErrorResponse('Please provide an email and password', 400));
   }
-
-  // Check for user
   const user = await Auth.findOne({ email }).select('+password');
 
   if (!user) {
     return next(new ErrorResponse('Invalid credentials', 401));
   }
 
-  // Check if password matches
   const isMatch = await user.matchPassword(password);
 
   if (!isMatch) {
@@ -132,12 +128,10 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('There is no user with that email', 404));
   }
 
-  // Get reset token
   const resetToken = user.getResetPasswordToken();
 
   await user.save({ validateBeforeSave: false });
 
-  // Create reset url
   const resetUrl = `${req.protocol}://${req.get(
     'host',
   )}/api/resetpassword/${resetToken}`;
@@ -207,5 +201,12 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 
 module.exports = {
-    getallUsers, register, login, deleteUser,updateUser,  logout, forgotPassword, resetPassword
+    getallUsers, 
+    register, 
+    login, 
+    deleteUser,
+    updateUser,  
+    logout, 
+    forgotPassword, 
+    resetPassword
 };
