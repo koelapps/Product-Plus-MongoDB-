@@ -21,6 +21,20 @@ const getallUsers = (req, res, next) => {
   });
 }
 
+
+// Get single user
+const getSingleUser = asyncHandler(async (req, res, next) => {
+  const user = await Auth.findById(req.params.id);
+
+  if (!user) {
+    return next(
+      new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  res.status(200).json({ success: true, data: user });
+});
+
 //Register User
 const register = asyncHandler(async (req, res, next) => {
   const { firstname, lastname, email, password } = req.body;
@@ -214,6 +228,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 module.exports = {
     getallUsers, 
+    getSingleUser,
     register, 
     login, 
     deleteUser,

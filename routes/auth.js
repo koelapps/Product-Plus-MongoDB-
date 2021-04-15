@@ -6,6 +6,7 @@ const authenticate  = require('../middleware/authenticate');
 
 
 router.get('/allusers', authenticate, AuthController.getallUsers);
+router.get('/singleuser/:id', authenticate, AuthController.getSingleUser);
 router.post('/register', AuthController.register);
 router.delete('/deleteuser/:id', authenticate, AuthController.deleteUser);
 router.put('/updateuser/:id', authenticate, AuthController.updateUser);
