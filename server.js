@@ -30,7 +30,7 @@ app.use('/api/', AuthRoute);
 //Google Auth
 app.use(cookieSession({
     name: "Product Plus Session",
-    keys: ['key1', 'key2']
+    keys: [process.env.JWT_SECRET]
 }));
 
 const isLoggedIn = (req, res, next) => {
@@ -53,19 +53,20 @@ app.get('/good', isLoggedIn, (req, res) => res.send(`welcome ${req.user.displayN
 
 
 app.get('/api/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] }));
+  passport.authenticate('google', { scope: ['openid', 'profile', 'email'] }));
 
-app.get('/api/google/callback', 
+app.get('/api/google/redirect', 
   passport.authenticate('google', { failureRedirect: '/failed' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    res.redirect('/good');
+    res.send(req.user);
+    
   });
 
   app.get('/api/google/logout', (req, res) => {
-    req.session = null;
     req.logout();
-    res.redirect('/');
+    res.send("Logout Sucess");
+    res.send(req.user);
   });
 
 
@@ -79,5 +80,3 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`.yellow.underline.bold);
 });
-
-
