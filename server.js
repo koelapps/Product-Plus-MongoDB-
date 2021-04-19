@@ -27,7 +27,7 @@ app.get('/', (req, res) => res.send('welcome to product plus'));
 
 //Route Files
 app.use('/api/users', UserRoute);
-app.use('https://productplusapi.herokuapp.com/api/', AuthRoute);
+app.use('/api/', AuthRoute);
 
 
 
