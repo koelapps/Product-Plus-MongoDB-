@@ -23,12 +23,15 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 
+app.get('/', (req, res) => res.send('welcome to product plus'));
+
 //Route Files
 app.use('/api/users', UserRoute);
 app.use('/api/', AuthRoute);
 
 
-app.get('/', (req, res) => res.send('welcome to product plus'));
+
+
 
 //Google Auth
 app.use(cookieSession({
