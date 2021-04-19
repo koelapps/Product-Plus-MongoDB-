@@ -45,7 +45,7 @@ const isLoggedIn = (req, res, next) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-//app.get('/', (req, res) => res.send('you are not logged in...!!'));
+app.get('/', (req, res) => res.send('you are not logged in...!!'));
 app.get('/failed', (req, res) => res.send('you failed to log in...!!'));
 app.get('/good', isLoggedIn, (req, res) => res.send(`welcome ${req.user.displayName}`));
 
