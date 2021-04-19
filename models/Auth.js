@@ -26,6 +26,10 @@ const authSchema = new Schema({
     dob:{
       type: String
     },
+    registered:{
+      type: String,
+      default: "Registered successfully"
+    },
     resetPasswordToken: String,
     resetPaswordExpire: Date
 },  {timestamps: true});

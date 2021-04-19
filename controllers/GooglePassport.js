@@ -21,22 +21,25 @@ const { currentUser } = require('./AuthController');
  clientSecret: 'nNkxujgJwcPQzJfTvhd1hm8s',
  callbackURL: "http://localhost:5000/api/google/redirect",
  passReqToCallback: true,
- profileFields : ["id", "firstname", "lastname", "email"]
+ profileFields : ["id", "firstname", "lastname", "email", "birthday"]
 }, async (req, res, accessToken, refreshToken, profile, done) => {
    const newAuth = {
        googleId: profile.id,
        firstname: profile.name.givenName,
        lastname: profile.name.familyName,
-       email: profile.emails[0].value
+       email: profile.emails[0].value,
+       dob: profile.birthday
    }
    try {
        let user = await Auth.findOne({  email: profile.emails[0].value });
+       const message = "Logined succesfully"
        if(user)
-       {    
-           return done(null, user);
+       { 
+            done(message);
        }else {
            user = await Auth.create(newAuth);
-           done(null, user);
+           done(user);
+        
        }
    } catch (err) {
        console.error(err);
