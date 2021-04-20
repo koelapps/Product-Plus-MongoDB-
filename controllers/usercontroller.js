@@ -204,6 +204,21 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     sendTokenResponse(user, 200, res);
 });
 
+  //social coonect
+  const socialConnect = asyncHandler(async (req, res, next) => {
+    const social = await User.findById(req.params.id).populate({
+      select: 'social'
+    });
+    if (!social) {
+      return next(
+        new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
+      );
+    }
+    res.status(200).json({
+      success: true,
+      data: social
+    });
+  });
 
 //Sending token to the cookie
 const sendTokenResponse = (user, statusCode, res) => {
@@ -228,6 +243,8 @@ const sendTokenResponse = (user, statusCode, res) => {
   };
 
 
+
+
  
 
 
@@ -241,5 +258,6 @@ module.exports = {
     logout, 
     currentUser,
     forgotPassword, 
-    resetPassword
+    resetPassword,
+    socialConnect
 };
