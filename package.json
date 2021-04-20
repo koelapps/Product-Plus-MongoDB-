@@ -4,7 +4,7 @@
   "description": "Backend API for Product Plus Application",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "NODE_ENV=production node server",
     "dev": "nodemon server"
   },
   "author": "Mohammad Asad",
