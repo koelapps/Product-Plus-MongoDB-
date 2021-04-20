@@ -1,14 +1,20 @@
 const express = require('express');
 const router = express.Router();
 
-const UserController = require('../controllers/usercontroller');
-const User = require('../models/User');
+const UserController = require('../controllers/UserController');
 const authenticate  = require('../middleware/authenticate');
 
-router.get('/', authenticate, UserController.getallUsers);
-router.get('/show/:id', authenticate, UserController.getSingleUser);
-router.post('/create', authenticate, UserController.createUser);
-router.post('/update/:id', authenticate, UserController.updateUser);
-router.delete('/delete/:id', authenticate, UserController.deleteUser);
+
+router.get('/allusers', authenticate, UserController.getallUsers);
+router.get('/singleuser/:id', authenticate, UserController.getSingleUser);
+router.post('/register', UserController.register);
+router.delete('/deleteuser/:id', authenticate, UserController.deleteUser);
+router.put('/updateuser/:id', authenticate, UserController.updateUser);
+router.post('/login', UserController.login);
+router.post('/logout',UserController.logout);
+router.get('/currentuser', authenticate, UserController.currentUser);
+router.post('/forgotpassword',UserController.forgotPassword);
+router.put('/resetpassword/:resettoken',UserController.resetPassword);
+
 
 module.exports = router;

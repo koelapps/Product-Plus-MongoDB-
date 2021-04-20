@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 
 dotenv.config({path:'./config/config.env'});
 
-const Auth = require('./models/Auth');
+const User = require('./models/User');
 
 
 mongoose.connect(process.env.MONGODB_URI, {
@@ -25,7 +25,7 @@ const importData = async () => {
 
  const deleteData = async () => {
         try {
-            await Auth.deleteMany();
+            await User.deleteMany();
     
             console.log('Data Destroyed...'.red.inverse);
             process.exit();
