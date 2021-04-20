@@ -213,7 +213,6 @@ const resetPassword = asyncHandler(async (req, res, next) => {
         new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
       );
     }
-   const connect = social.select(req.body.social);
    res.status(200).json({
      success: true,
      data: social
