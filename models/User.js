@@ -20,7 +20,7 @@ const userSchema = new Schema({
         type: String,
         select: false
     },
-    dob:{
+    dateOfBirth:{
       type: String
     },
     social:[{
