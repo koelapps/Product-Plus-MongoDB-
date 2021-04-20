@@ -2,7 +2,7 @@
   "name": "product-plus",
   "version": "1.0.0",
   "description": "Backend API for Product Plus Application",
-  "main": "index.js",
+  "main": "server.js",
   "engines": {
     "node": "15.12.0"
   },
