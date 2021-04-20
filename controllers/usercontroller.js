@@ -206,16 +206,17 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
   //social coonect
   const socialConnect = asyncHandler(async (req, res, next) => {
-    const social = await User.findById(req.params.id);
+    const social = await User.findOne(req.params.id);
   
     if (!social) {
       return next(
         new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
       );
     }
+    const connect = social.social;
    res.status(200).json({
      success: true,
-     data: social
+     social: connect
    });
   });
 
