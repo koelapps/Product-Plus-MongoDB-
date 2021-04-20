@@ -37,12 +37,12 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  const { firstname, lastname, email, password, dob, social} = req.body;
+  const { firstName, lastName, email, password, dob, social} = req.body;
 
   // Create user
   const user = await User.create({
-    firstname,
-    lastname,
+    firstName,
+    lastName,
     email,
     password,
     dob,
