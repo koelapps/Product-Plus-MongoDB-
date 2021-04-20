@@ -23,6 +23,10 @@ const userSchema = new Schema({
     dob:{
       type: String
     },
+    social:{
+      Facebook:{mid: Number},
+      Twitter:{mid: Number}
+    },
     resetPasswordToken: String,
     resetPaswordExpire: Date
 },  {timestamps: true});
