@@ -37,7 +37,7 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  const { firstname, lastname, email, password, dob } = req.body;
+  const { firstname, lastname, email, password, dob, social } = req.body;
 
   // Create user
   const user = await User.create({
@@ -45,7 +45,8 @@ const register = asyncHandler(async (req, res, next) => {
     lastname,
     email,
     password,
-    dob
+    dob,
+    social
   });
 
   await user.save().then(user => {
