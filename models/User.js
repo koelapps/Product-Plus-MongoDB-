@@ -24,12 +24,9 @@ const userSchema = new Schema({
       type: String
     },
     social:{
-      Facebook:{
+      
+        type: String,
         mid: Number
-      },
-      Twitter:{
-        mid: Number
-      }
     },
     resetPasswordToken: String,
     resetPaswordExpire: Date
