@@ -25,8 +25,8 @@ app.get('/', (req, res) => res.send('welcome to product plus'));
 //Route Files
 app.use('/api/', UserRoute);
 
-var PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+
+app.listen(process.env.PORT || 5000, () => {
     console.log(`server running on port ${PORT}`.yellow.underline.bold);
 });
