@@ -22,10 +22,10 @@ const userSchema = new Schema({
     dateOfBirth:{
       type: String
     },
-    socialAccounts:[ {Accounts: {
+    socialAccounts:[{
       type: {type: String},
       mid: {type: String, select: true}
-    }}],
+    }],
     resetPasswordToken: String,
     resetPaswordExpire: Date
 },  {timestamps: true});
