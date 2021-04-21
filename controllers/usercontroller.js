@@ -204,9 +204,9 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     sendTokenResponse(user, 200, res);
 });
 
-  //social connect
+  //list of social connect
   const socialConnect = asyncHandler(async (req, res, next) => {
-    const social = await User.findOne(req.params.id);
+    const social = await User.findById(req.params.id);
   
     if (!social) {
       return next(
