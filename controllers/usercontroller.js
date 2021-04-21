@@ -205,7 +205,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 });
 
   //list of social connect
-  const socialConnect = asyncHandler(async (req, res, next) => {
+  const getsocialAccounts = asyncHandler(async (req, res, next) => {
     const social = await User.findById(req.params.id);
   
     if (!social) {
@@ -266,5 +266,5 @@ module.exports = {
     currentUser,
     forgotPassword, 
     resetPassword,
-    socialConnect
+    getsocialAccounts
 };
