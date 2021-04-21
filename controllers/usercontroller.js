@@ -213,18 +213,39 @@ const resetPassword = asyncHandler(async (req, res, next) => {
         new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
       );
     }
-    const connect = await social.social;
+    //const socialaccounts = await social.social;
    res.status(200).json({
      success: true,
-     social: connect
+     id: req.params.id,
+     user: social.email,
+     socialAccounts: social.social
    });
   });
 
 
+  //adding social accounts
+  const addsocialAccounts = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      const {social} = req.body;
+      const facebook = await User.findOneAndUpdate({
+        social
+      });
+        res.status(200).json({
+          success: true,
+          message: 'Social Accounts Added Successfully',
+          Accounts: req.body
+        });
+    }else {
+      return next(
+        new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
+      );
+    }
+    
+  });
+
   
 
-
-  
 
 
 //Sending token to the cookie
@@ -266,5 +287,6 @@ module.exports = {
     currentUser,
     forgotPassword, 
     resetPassword,
-    getsocialAccounts
+    getsocialAccounts,
+    addsocialAccounts
 };
