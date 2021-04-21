@@ -204,7 +204,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     sendTokenResponse(user, 200, res);
 });
 
-  //social coonect
+  //social connect
   const socialConnect = asyncHandler(async (req, res, next) => {
     const social = await User.findOne(req.params.id);
   
@@ -213,12 +213,16 @@ const resetPassword = asyncHandler(async (req, res, next) => {
         new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
       );
     }
-    const connect = social.social;
+    const connect = await social.social;
    res.status(200).json({
      success: true,
      social: connect
    });
   });
+
+
+  
+
 
 //Sending token to the cookie
 const sendTokenResponse = (user, statusCode, res) => {
