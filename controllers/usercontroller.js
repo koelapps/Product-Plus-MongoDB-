@@ -224,6 +224,9 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   
 
 
+  
+
+
 //Sending token to the cookie
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token

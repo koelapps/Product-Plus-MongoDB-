@@ -23,7 +23,7 @@ app.use(express.json());
 app.get('/', (req, res) => res.send('welcome to product plus'));
 
 //Route Files
-app.use('/api/', UserRoute);
+app.use('/api/v1/', UserRoute);
 
 const PORT = process.env.PORT || 5000;
 

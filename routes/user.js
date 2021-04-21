@@ -15,7 +15,7 @@ router.post('/logout',UserController.logout);
 router.get('/currentuser', authenticate, UserController.currentUser);
 router.post('/forgotpassword',UserController.forgotPassword);
 router.put('/resetpassword/:resettoken',UserController.resetPassword);
-router.post('/users/connect', authenticate, UserController.socialConnect);
+router.post('/social/connect', authenticate, UserController.socialConnect);
 
 
 module.exports = router;
