@@ -244,6 +244,18 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     
   });
 
+  //connect to social network
+  const socialConnect = asyncHandler(async (req, res, next) => {
+    const user = await User.findOne(req.params.id);
+    if(user){
+      const connect = await User.user.aggregate([{"$unwind": "$social"}, {"$group": {"_id": "social._id", "type": "social.type"}}]);
+      res.status(200).json({
+        success: true,
+        data: connect
+      });
+    }
+  });
+
   
 
 
@@ -288,5 +300,6 @@ module.exports = {
     forgotPassword, 
     resetPassword,
     getsocialAccounts,
-    addsocialAccounts
+    addsocialAccounts,
+    socialConnect
 };

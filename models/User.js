@@ -22,7 +22,7 @@ const userSchema = new Schema({
     dateOfBirth:{
       type: String
     },
-    socialAccounts:[{
+    social:[{
       type: {type: String},
       mid: {type: String, select: true}
     }],
