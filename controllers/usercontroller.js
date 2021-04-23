@@ -5,6 +5,7 @@ const asyncHandler = require('../middleware/async');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../util/sendEmail');
 const ErrorResponse = require('../util/errorResponse');
+const  { db }  = require('../models/User');
 
 //show the list of users
 const getallUsers = (req, res, next) => {
@@ -37,7 +38,7 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  const { firstName, lastName, email, password, dateOfBirth, social} = req.body;
+  const { firstName, lastName, email, password, dateOfBirth} = req.body;
 
   // Create user
   const user = await User.create({
@@ -45,8 +46,7 @@ const register = asyncHandler(async (req, res, next) => {
     lastName,
     email,
     password,
-    dateOfBirth,
-    social
+    dateOfBirth
   });
 
   await user.save().then(user => {
@@ -228,7 +228,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.params.id);
     if (user) {
       const {social} = req.body;
-      const facebook = await User.findOneAndUpdate({
+      const account = await User.findOneAndUpdate({
         social
       });
         res.status(200).json({
@@ -241,20 +241,172 @@ const resetPassword = asyncHandler(async (req, res, next) => {
         new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
       );
     }
-    
   });
 
-  //connect to social network
-  const socialConnect = asyncHandler(async (req, res, next) => {
+  //connect to social Acoount Facebook
+  const connectAccountFacebook = asyncHandler(async (req, res, next) => {
     const user = await User.findOne(req.params.id);
-    if(user){
-      const connect = await User.user.aggregate([{"$unwind": "$social"}, {"$group": {"_id": "social._id", "type": "social.type"}}]);
-      res.status(200).json({
-        success: true,
-        data: connect
+    if(user)
+    {
+      const connect = await db.collection('users').aggregate([
+        {$unwind: '$social'}, 
+        {$group: {
+            _id:{
+              id: '$_id',
+              type: 'Facebook',
+              mid: '$social.Facebook.mid'
+            }
+
+        }},
+        {
+          $project : {
+            _id : '$_id.id',
+            type : '$_id.type',
+            mid : '$_id.mid'
+        },
+        },
+        {
+          $group : {
+            _id : '$_id',
+            type : { $addToSet : '$type' },
+            mid : { $addToSet : '$mid' }
+        }
+        }
+      ]).toArray(function(err, result) {
+        if (err) throw err;
+        res.status(200).json({
+          success: true,
+          data: result
+        })
+        
       });
+     
     }
+   
   });
+
+  //connect to social Acoount Twitter
+  const connectAccountTwitter = asyncHandler(async (req, res, next) => {
+    const user = await User.findOne(req.params.id);
+    if(user)
+    {
+      const connect = await db.collection('users').aggregate([
+        {$unwind: '$social'}, 
+        {$group: {
+            _id:{
+              id: '$_id',
+              type: 'Twitter',
+              mid: '$social.Twitter.mid'
+            }
+
+        }},
+        {
+          $project : {
+            _id : '$_id.id',
+            type : '$_id.type',
+            mid : '$_id.mid'
+        },
+        },
+        {
+          $group : {
+            _id : '$_id',
+            type : { $addToSet : '$type' },
+            mid : { $addToSet : '$mid' }
+        }
+        }
+      ]).toArray(function(err, result) {
+        if (err) throw err;
+        res.status(200).json({
+          success: true,
+          data: result
+        })
+        
+      });
+     
+    }
+   
+  });
+
+   //disconnect to social Acoount Facebook
+   const disconnectAccountFacebook = asyncHandler(async (req, res, next) => {
+    const user = await User.findOne(req.params.id);
+    if(user)
+    {
+      const connect = await db.collection('users').aggregate([
+        {$unwind: '$social'}, 
+        {$group: {
+            _id:{
+              id: '$_id',
+              type: 'Facebook'
+            }
+
+        }},
+        {
+          $project : {
+            _id : '$_id.id',
+            type : '$_id.type'
+        },
+        },
+        {
+          $group : {
+            _id : '$_id',
+            type : { $addToSet : '$type' }
+        }
+        }
+      ]).toArray(function(err, result) {
+        if (err) throw err;
+        res.status(200).json({
+          success: true,
+          data: result
+        })
+        
+      });
+     
+    }
+   
+  });
+
+   //disconnect to social Acoount Twitter
+   const disconnectAccountTwitter = asyncHandler(async (req, res, next) => {
+    const user = await User.findOne(req.params.id);
+    if(user)
+    {
+      const connect = await db.collection('users').aggregate([
+        {$unwind: '$social'}, 
+        {$group: {
+            _id:{
+              id: '$_id',
+              type: 'Twitter'
+            }
+
+        }},
+        {
+          $project : {
+            _id : '$_id.id',
+            type : '$_id.type'
+        },
+        },
+        {
+          $group : {
+            _id : '$_id',
+            type : { $addToSet : '$type' }
+        }
+        }
+      ]).toArray(function(err, result) {
+        if (err) throw err;
+        res.status(200).json({
+          success: true,
+          data: result
+        })
+        
+      });
+     
+    }
+   
+  });
+
+
+  
 
   
 
@@ -301,5 +453,8 @@ module.exports = {
     resetPassword,
     getsocialAccounts,
     addsocialAccounts,
-    socialConnect
+    connectAccountFacebook,
+    connectAccountTwitter,
+    disconnectAccountFacebook,
+    disconnectAccountTwitter
 };

@@ -17,7 +17,10 @@ router.post('/forgotpassword',UserController.forgotPassword);
 router.put('/resetpassword/:resettoken',UserController.resetPassword);
 router.get('/socialaccounts/:id', authenticate, UserController.getsocialAccounts);
 router.post('/social/:id/accounts', authenticate, UserController.addsocialAccounts);
-router.post('/social/:connect/:id/facebook', authenticate, UserController.socialConnect);
+router.post('/social/connect/facebook', authenticate, UserController.connectAccountFacebook);
+router.post('/social/connect/twitter', authenticate, UserController.connectAccountTwitter);
+router.post('/social/disconnect/facebook', authenticate, UserController.disconnectAccountFacebook);
+router.post('/social/disconnect/twitter', authenticate, UserController.disconnectAccountTwitter);
 
 
 module.exports = router;
