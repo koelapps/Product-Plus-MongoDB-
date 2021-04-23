@@ -5,23 +5,22 @@ const asyncHandler = require('../middleware/async');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../util/sendEmail');
 const ErrorResponse = require('../util/errorResponse');
-const  { db }  = require('../models/User');
+const { db } = require('../models/User');
 
 //show the list of users
 const getallUsers = (req, res, next) => {
   User.find()
-  .then(response => {
+    .then((response) => {
       res.json({
-          success: true,
-          count: response.length,
-          data: response
+        success: true,
+        count: response.length,
+        data: response,
       });
-  })
-  .catch(error => {
-      res.json({message: 'An error Occured'})
-  });
-}
-
+    })
+    .catch((error) => {
+      res.json({ message: 'An error Occured' });
+    });
+};
 
 // Get single user
 const getSingleUser = asyncHandler(async (req, res, next) => {
@@ -38,7 +37,7 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  const { firstName, lastName, email, password, dateOfBirth} = req.body;
+  const { firstName, lastName, email, password, dateOfBirth } = req.body;
 
   // Create user
   const user = await User.create({
@@ -46,21 +45,24 @@ const register = asyncHandler(async (req, res, next) => {
     lastName,
     email,
     password,
-    dateOfBirth
+    dateOfBirth,
   });
 
-  await user.save().then(user => {
-    sendTokenResponse(user, 200, res);
-    res.status(200).json({
-      success: true,
-      message: 'User Added Successfully'
+  await user
+    .save()
+    .then((user) => {
+      sendTokenResponse(user, 200, res);
+      res.status(200).json({
+        success: true,
+        message: 'User Added Successfully',
+      });
+    })
+    .catch((error) => {
+      res.status(404).json({
+        success: false,
+        message: `User with this mail ID is already registered`,
+      });
     });
-  })
-  .catch(error => {
-    res.status(404).json({success: false, message: `User with this mail ID is already registered`})
-});
-  
-
 });
 
 //Delete User
@@ -72,7 +74,6 @@ const deleteUser = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`user not found with id of ${req.params.id}`, 404)
     );
   }
-
 
   await user.remove();
 
@@ -91,17 +92,14 @@ const updateUser = asyncHandler(async (req, res, next) => {
 
   user = await User.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-    runValidators: true
+    runValidators: true,
   });
 
   res.status(200).json({ success: true, data: user });
 });
 
-
-
 //Login user
 const login = asyncHandler(async (req, res, next) => {
-
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -124,29 +122,26 @@ const login = asyncHandler(async (req, res, next) => {
 
 //Logout User
 const logout = (req, res, next) => {
-    res.cookie('token', 'none', {
-        expires: new Date(Date.now() + 10 * 1000),
-        httpOnly: true,
-      });
-    
-      res.status(200).json({
-        success: true,
-        message: 'Logout Success!!'
-      });
-}
+  res.cookie('token', 'none', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: 'Logout Success!!',
+  });
+};
 
 //get current user
 const currentUser = asyncHandler(async (req, res, next) => {
-
   const user = req.user;
 
   res.status(200).json({
     success: true,
-    data: user
+    data: user,
   });
 });
-
-
 
 //forgot password
 const forgotPassword = asyncHandler(async (req, res, next) => {
@@ -161,7 +156,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   const resetUrl = `${req.protocol}://${req.get(
-    'host',
+    'host'
   )}/api/resetpassword/${resetToken}`;
 
   const message = `To reset the password copy and paste the url and make PUT request to \n\n ${resetUrl}`;
@@ -185,276 +180,36 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   }
 });
 
-
 //Reset Passwod
 const resetPassword = asyncHandler(async (req, res, next) => {
-    //Get Hashed Token
-    const resetPasswordToken = crypto.createHash('sha256').update(req.params.resettoken).digest('hex');
-    const user = await User.findOne({
-        resetPasswordToken,
-        resetPaswordExpire: {$gt: Date.now()}
-    });
-    if(!user){
-        return next(new ErrorResponse('Invalid Token', 400));
-    }
-    user.password = req.body.password;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
-    await user.save();
-    sendTokenResponse(user, 200, res);
+  //Get Hashed Token
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.resettoken)
+    .digest('hex');
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPaswordExpire: { $gt: Date.now() },
+  });
+  if (!user) {
+    return next(new ErrorResponse('Invalid Token', 400));
+  }
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+  sendTokenResponse(user, 200, res);
 });
 
-  //list of social connect
-  const getsocialAccounts = asyncHandler(async (req, res, next) => {
-    const social = await User.findById(req.params.id);
-  
-    if (!social) {
-      return next(
-        new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
-      );
-    }
-    //const socialaccounts = await social.social;
-   res.status(200).json({
-     success: true,
-     id: req.params.id,
-     user: social.email,
-     socialAccounts: social.social
-   });
-  });
-
-
-  //adding social accounts
-  const addsocialAccounts = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.params.id);
-    if (user) {
-      const {social} = req.body;
-      const account = await User.findOneAndUpdate({
-        social
-      });
-        res.status(200).json({
-          success: true,
-          message: 'Social Accounts Added Successfully',
-          Accounts: req.body
-        });
-    }else {
-      return next(
-        new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
-      );
-    }
-  });
-
-  //connect to social Acoount Facebook
-  const connectAccountFacebook = asyncHandler(async (req, res, next) => {
-    const user = await User.findOne(req.params.id);
-    if(user)
-    {
-      const connect = await db.collection('users').aggregate([
-        {$unwind: '$social'}, 
-        {$group: {
-            _id:{
-              id: '$_id',
-              type: 'Facebook',
-              mid: '$social.Facebook.mid'
-            }
-
-        }},
-        {
-          $project : {
-            _id : '$_id.id',
-            type : '$_id.type',
-            mid : '$_id.mid'
-        },
-        },
-        {
-          $group : {
-            _id : '$_id',
-            type : { $addToSet : '$type' },
-            mid : { $addToSet : '$mid' }
-        }
-        }
-      ]).toArray(function(err, result) {
-        if (err) throw err;
-        res.status(200).json({
-          success: true,
-          data: result
-        })
-        
-      });
-     
-    }
-   
-  });
-
-  //connect to social Acoount Twitter
-  const connectAccountTwitter = asyncHandler(async (req, res, next) => {
-    const user = await User.findOne(req.params.id);
-    if(user)
-    {
-      const connect = await db.collection('users').aggregate([
-        {$unwind: '$social'}, 
-        {$group: {
-            _id:{
-              id: '$_id',
-              type: 'Twitter',
-              mid: '$social.Twitter.mid'
-            }
-
-        }},
-        {
-          $project : {
-            _id : '$_id.id',
-            type : '$_id.type',
-            mid : '$_id.mid'
-        },
-        },
-        {
-          $group : {
-            _id : '$_id',
-            type : { $addToSet : '$type' },
-            mid : { $addToSet : '$mid' }
-        }
-        }
-      ]).toArray(function(err, result) {
-        if (err) throw err;
-        res.status(200).json({
-          success: true,
-          data: result
-        })
-        
-      });
-     
-    }
-   
-  });
-
-   //disconnect to social Acoount Facebook
-   const disconnectAccountFacebook = asyncHandler(async (req, res, next) => {
-    const user = await User.findOne(req.params.id);
-    if(user)
-    {
-      const connect = await db.collection('users').aggregate([
-        {$unwind: '$social'}, 
-        {$group: {
-            _id:{
-              id: '$_id',
-              type: 'Facebook'
-            }
-
-        }},
-        {
-          $project : {
-            _id : '$_id.id',
-            type : '$_id.type'
-        },
-        },
-        {
-          $group : {
-            _id : '$_id',
-            type : { $addToSet : '$type' }
-        }
-        }
-      ]).toArray(function(err, result) {
-        if (err) throw err;
-        res.status(200).json({
-          success: true,
-          data: result
-        })
-        
-      });
-     
-    }
-   
-  });
-
-   //disconnect to social Acoount Twitter
-   const disconnectAccountTwitter = asyncHandler(async (req, res, next) => {
-    const user = await User.findOne(req.params.id);
-    if(user)
-    {
-      const connect = await db.collection('users').aggregate([
-        {$unwind: '$social'}, 
-        {$group: {
-            _id:{
-              id: '$_id',
-              type: 'Twitter'
-            }
-
-        }},
-        {
-          $project : {
-            _id : '$_id.id',
-            type : '$_id.type'
-        },
-        },
-        {
-          $group : {
-            _id : '$_id',
-            type : { $addToSet : '$type' }
-        }
-        }
-      ]).toArray(function(err, result) {
-        if (err) throw err;
-        res.status(200).json({
-          success: true,
-          data: result
-        })
-        
-      });
-     
-    }
-   
-  });
-
-
-  
-
-  
-
-
-
-//Sending token to the cookie
-const sendTokenResponse = (user, statusCode, res) => {
-    // Create token
-    const token = user.getSignedJwtToken();
-  
-    const options = {
-      expires: new Date(
-        Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000,
-      ),
-      httpOnly: true,
-    };
-  
-    if (process.env.NODE_ENV === 'production') {
-      options.secure = true;
-    }
-  
-    res.status(statusCode).cookie('token', token, options).json({
-      success: true,
-      token,
-    });
-  };
-
-
-
-
- 
-
-
 module.exports = {
-    getallUsers, 
-    getSingleUser,
-    register, 
-    login, 
-    deleteUser,
-    updateUser,  
-    logout, 
-    currentUser,
-    forgotPassword, 
-    resetPassword,
-    getsocialAccounts,
-    addsocialAccounts,
-    connectAccountFacebook,
-    connectAccountTwitter,
-    disconnectAccountFacebook,
-    disconnectAccountTwitter
+  getallUsers,
+  getSingleUser,
+  register,
+  login,
+  deleteUser,
+  updateUser,
+  logout,
+  currentUser,
+  forgotPassword,
+  resetPassword,
 };
