@@ -37,7 +37,14 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  const { firstName, lastName, email, password, dateOfBirth } = req.body;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    dateOfBirth,
+    social,
+  } = req.body;
 
   // Create user
   const user = await User.create({
@@ -46,6 +53,7 @@ const register = asyncHandler(async (req, res, next) => {
     email,
     password,
     dateOfBirth,
+    social,
   });
 
   await user
@@ -82,7 +90,7 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 
 //update User
 const updateUser = asyncHandler(async (req, res, next) => {
-  let user = await User.findById(req.params.id);
+  let user = await User.findOne(req.params.id);
 
   if (!user) {
     return next(
@@ -200,6 +208,28 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   await user.save();
   sendTokenResponse(user, 200, res);
 });
+
+//Sending token to the cookie
+const sendTokenResponse = (user, statusCode, res) => {
+  // Create token
+  const token = user.getSignedJwtToken();
+
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    options.secure = true;
+  }
+
+  res.status(statusCode).cookie('token', token, options).json({
+    success: true,
+    token,
+  });
+};
 
 module.exports = {
   getallUsers,

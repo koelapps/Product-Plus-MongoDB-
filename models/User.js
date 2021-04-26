@@ -14,7 +14,6 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      unique: true,
     },
     password: {
       type: String,
@@ -25,8 +24,8 @@ const userSchema = new Schema(
     },
     social: [
       {
-        type: { type: String },
-        mid: { type: String },
+        type: { type: String, unique: false },
+        mid: { type: String, unique: false },
       },
     ],
     resetPasswordToken: String,

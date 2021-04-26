@@ -4,8 +4,8 @@ const router = express.Router();
 const SocialController = require('../controllers/socialcontroller');
 const authenticate = require('../middleware/authenticate');
 
+router.post('/:id/accounts', authenticate, SocialController.addsocialAccounts);
 router.get('/accounts/:id', authenticate, SocialController.getsocialAccounts);
-router.post('/accounts', authenticate, SocialController.addsocialAccounts);
 router.post(
   '/connect/facebook',
   authenticate,
