@@ -57,7 +57,7 @@ const connectAccount = asyncHandler(async (req, res, next) => {
     });
     res.status(200).json({
       success: true,
-      data: AccountConnect,
+      data: AccountConnect[0],
     });
   } else {
     return next(
@@ -80,7 +80,7 @@ const disconnectAccount = asyncHandler(async (req, res, next) => {
   });
   res.status(200).json({
     success: true,
-    data: AccountdisConnect,
+    data: AccountdisConnect[0],
   });
 });
 
