@@ -28,7 +28,7 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
   if (!user) {
     return next(
-      new ErrorResponse(`Bootcamp not found with id of ${req.body.id}`, 404)
+      new ErrorResponse(`User not found with id of ${req.body.id}`, 404)
     );
   }
 
@@ -94,7 +94,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
 
   if (!user) {
     return next(
-      new ErrorResponse(`Bootcamp not found with id of ${req.body.id}`, 404)
+      new ErrorResponse(`User not found with id of ${req.body.id}`, 404)
     );
   }
 
