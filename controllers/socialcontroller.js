@@ -22,11 +22,11 @@ const getsocialAccounts = asyncHandler(async (req, res, next) => {
 
 //adding social accounts
 const addsocialAccounts = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  console.log(user);
+  const user = await User.findById(req.body.id);
+
   if (user) {
     const { social } = req.body;
-    const account = await User.findByIdAndUpdate(req.params.id, {
+    const account = await User.findByIdAndUpdate(req.body.id, {
       social,
     });
     res.status(200).json({
@@ -41,56 +41,41 @@ const addsocialAccounts = asyncHandler(async (req, res, next) => {
   }
 });
 
-//connect to social Acoount Facebook
-const connectAccountFacebook = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
+//connect to social Acoounts
+const connectAccount = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.body.id);
   if (user) {
-    const FacebookConnect = [];
+    const AccountConnect = [];
     await user.social.forEach((fieldElement) => {
-      const FacebookObject = {};
-      if (fieldElement.type === 'Facebook') {
-        FacebookObject.id = user.id;
-        FacebookObject.type = fieldElement.type;
-        FacebookObject.mid = fieldElement.mid;
-        FacebookConnect.push(FacebookObject);
+      const AccountObject = {};
+      if (fieldElement.type === req.query.account) {
+        AccountObject.id = user.id;
+        AccountObject.type = fieldElement.type;
+        AccountObject.mid = fieldElement.mid;
+        AccountConnect.push(AccountObject);
       }
     });
     res.status(200).json({
       success: true,
-      data: FacebookConnect,
+      data: AccountConnect,
     });
+  } else {
+    return next(
+      new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
+    );
   }
 });
 
-//connect to social Acoount Twitter
-const connectAccountTwitter = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
-  const TwitterConnect = [];
-  user.social.forEach((element) => {
-    const TwitterObject = {};
-    if (element.type === 'Twitter') {
-      TwitterObject.id = user.id;
-      TwitterObject.type = element.type;
-      TwitterObject.mid = element.mid;
-      TwitterConnect.push(TwitterObject);
-    }
-  });
-  res.status(200).json({
-    success: true,
-    data: TwitterConnect,
-  });
-});
-
 //disconnect to social Acoount Facebook
-const disconnectAccountFacebook = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
-  const FacebookdisConnect = [];
+const disconnectAccount = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.body.id);
+  const AccountdisConnect = [];
   user.social.forEach((fieldElement) => {
-    const FacebookObject = {};
-    if (fieldElement.type === 'Facebook') {
-      FacebookObject.id = user.id;
-      FacebookObject.type = fieldElement.type;
-      FacebookdisConnect.push(FacebookObject);
+    const AccountObject = {};
+    if (fieldElement.type === req.query.account) {
+      AccountObject.id = user.id;
+      AccountObject.type = fieldElement.type;
+      AccountdisConnect.push(AccountObject);
     }
   });
   res.status(200).json({
@@ -99,29 +84,9 @@ const disconnectAccountFacebook = asyncHandler(async (req, res, next) => {
   });
 });
 
-//disconnect to social Acoount Twitter
-const disconnectAccountTwitter = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
-  const TwitterdisConnect = [];
-  user.social.forEach((element) => {
-    const TwitterObject = {};
-    if (element.type === 'Twitter') {
-      TwitterObject.id = user.id;
-      TwitterObject.type = element.type;
-      TwitterdisConnect.push(TwitterObject);
-    }
-  });
-  res.status(200).json({
-    success: true,
-    data: TwitterdisConnect,
-  });
-});
-
 module.exports = {
   getsocialAccounts,
   addsocialAccounts,
-  connectAccountFacebook,
-  connectAccountTwitter,
-  disconnectAccountFacebook,
-  disconnectAccountTwitter,
+  connectAccount,
+  disconnectAccount,
 };
