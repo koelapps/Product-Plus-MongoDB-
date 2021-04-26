@@ -45,19 +45,19 @@ const addsocialAccounts = asyncHandler(async (req, res, next) => {
 const connectAccount = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.body.id);
   if (user) {
-    const FacebookConnect = [];
+    const AccountConnect = [];
     await user.social.forEach((fieldElement) => {
-      const FacebookObject = {};
+      const AccountObject = {};
       if (fieldElement.type === req.query.account) {
-        FacebookObject.id = user.id;
-        FacebookObject.type = fieldElement.type;
-        FacebookObject.mid = fieldElement.mid;
-        FacebookConnect.push(FacebookObject);
+        AccountObject.id = user.id;
+        AccountObject.type = fieldElement.type;
+        AccountObject.mid = fieldElement.mid;
+        AccountConnect.push(AccountObject);
       }
     });
     res.status(200).json({
       success: true,
-      data: FacebookConnect,
+      data: AccountConnect,
     });
   } else {
     return next(
@@ -69,13 +69,13 @@ const connectAccount = asyncHandler(async (req, res, next) => {
 //disconnect to social Acoount Facebook
 const disconnectAccount = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.body.id);
-  const FacebookdisConnect = [];
+  const AccountdisConnect = [];
   user.social.forEach((fieldElement) => {
-    const FacebookObject = {};
+    const AccountObject = {};
     if (fieldElement.type === req.query.account) {
-      FacebookObject.id = user.id;
-      FacebookObject.type = fieldElement.type;
-      FacebookdisConnect.push(FacebookObject);
+      AccountObject.id = user.id;
+      AccountObject.type = fieldElement.type;
+      AccountdisConnect.push(AccountObject);
     }
   });
   res.status(200).json({
