@@ -4,17 +4,17 @@ const ErrorResponse = require('../util/errorResponse');
 
 //list of social connect
 const getsocialAccounts = asyncHandler(async (req, res, next) => {
-  const social = await User.findById(req.params.id);
+  const social = await User.findById(req.body.id);
 
   if (!social) {
     return next(
-      new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
+      new ErrorResponse(`No user found with the id of ${req.body.id}`, 404)
     );
   }
   //const socialaccounts = await social.social;
   res.status(200).json({
     success: true,
-    id: req.params.id,
+    id: req.body.id,
     user: social.email,
     socialAccounts: social.social,
   });

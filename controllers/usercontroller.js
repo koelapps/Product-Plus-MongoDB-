@@ -24,11 +24,11 @@ const getallUsers = (req, res, next) => {
 
 // Get single user
 const getSingleUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
+  const user = await User.findById(req.body.id);
 
   if (!user) {
     return next(
-      new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+      new ErrorResponse(`Bootcamp not found with id of ${req.body.id}`, 404)
     );
   }
 
@@ -75,11 +75,11 @@ const register = asyncHandler(async (req, res, next) => {
 
 //Delete User
 const deleteUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
+  const user = await User.findById(req.body.id);
 
   if (!user) {
     return next(
-      new ErrorResponse(`user not found with id of ${req.params.id}`, 404)
+      new ErrorResponse(`user not found with id of ${req.body.id}`, 404)
     );
   }
 
@@ -90,15 +90,15 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 
 //update User
 const updateUser = asyncHandler(async (req, res, next) => {
-  let user = await User.findOne(req.params.id);
+  let user = await User.findOne(req.body.id);
 
   if (!user) {
     return next(
-      new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+      new ErrorResponse(`Bootcamp not found with id of ${req.body.id}`, 404)
     );
   }
 
-  user = await User.findByIdAndUpdate(req.params.id, req.body, {
+  user = await User.findByIdAndUpdate(req.body.id, req.body, {
     new: true,
     runValidators: true,
   });

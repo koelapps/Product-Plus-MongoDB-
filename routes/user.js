@@ -5,10 +5,10 @@ const UserController = require('../controllers/usercontroller');
 const authenticate = require('../middleware/authenticate');
 
 router.get('/allusers', authenticate, UserController.getallUsers);
-router.get('/singleuser/:id', authenticate, UserController.getSingleUser);
+router.get('/singleuser', authenticate, UserController.getSingleUser);
 router.post('/register', UserController.register);
-router.delete('/deleteuser/:id', authenticate, UserController.deleteUser);
-router.put('/updateuser/:id', authenticate, UserController.updateUser);
+router.delete('/deleteuser', authenticate, UserController.deleteUser);
+router.put('/updateuser', authenticate, UserController.updateUser);
 router.post('/login', UserController.login);
 router.post('/logout', UserController.logout);
 router.get('/currentuser', authenticate, UserController.currentUser);
