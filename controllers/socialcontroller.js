@@ -22,10 +22,11 @@ const getsocialAccounts = asyncHandler(async (req, res, next) => {
 
 //adding social accounts
 const addsocialAccounts = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
+  const user = await User.findById(req.body.id);
+
   if (user) {
     const { social } = req.body;
-    const account = await User.findOneAndUpdate({
+    const account = await User.findByIdAndUpdate(req.body.id, {
       social,
     });
     res.status(200).json({
@@ -40,51 +41,38 @@ const addsocialAccounts = asyncHandler(async (req, res, next) => {
   }
 });
 
-//connect to social Acoount Facebook
-const connectAccountFacebook = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
-  const FacebookConnect = [];
-  user.social.forEach((fieldElement) => {
-    const FacebookObject = {};
-    if (fieldElement.type === 'Facebook') {
-      FacebookObject.id = user.id;
-      FacebookObject.type = fieldElement.type;
-      FacebookObject.mid = fieldElement.mid;
-      FacebookConnect.push(FacebookObject);
-    }
-  });
-  res.status(200).json({
-    success: true,
-    data: FacebookConnect,
-  });
-});
-
-//connect to social Acoount Twitter
-const connectAccountTwitter = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
-  const TwitterConnect = [];
-  user.social.forEach((element) => {
-    const TwitterObject = {};
-    if (element.type === 'Twitter') {
-      TwitterObject.id = user.id;
-      TwitterObject.type = element.type;
-      TwitterObject.mid = element.mid;
-      TwitterConnect.push(TwitterObject);
-    }
-  });
-  res.status(200).json({
-    success: true,
-    data: TwitterConnect,
-  });
+//connect to social Acoounts
+const connectAccount = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.body.id);
+  if (user) {
+    const FacebookConnect = [];
+    await user.social.forEach((fieldElement) => {
+      const FacebookObject = {};
+      if (fieldElement.type === req.query.account) {
+        FacebookObject.id = user.id;
+        FacebookObject.type = fieldElement.type;
+        FacebookObject.mid = fieldElement.mid;
+        FacebookConnect.push(FacebookObject);
+      }
+    });
+    res.status(200).json({
+      success: true,
+      data: FacebookConnect,
+    });
+  } else {
+    return next(
+      new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
+    );
+  }
 });
 
 //disconnect to social Acoount Facebook
-const disconnectAccountFacebook = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
+const disconnectAccount = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.body.id);
   const FacebookdisConnect = [];
   user.social.forEach((fieldElement) => {
     const FacebookObject = {};
-    if (fieldElement.type === 'Facebook') {
+    if (fieldElement.type === req.query.account) {
       FacebookObject.id = user.id;
       FacebookObject.type = fieldElement.type;
       FacebookdisConnect.push(FacebookObject);
@@ -96,29 +84,9 @@ const disconnectAccountFacebook = asyncHandler(async (req, res, next) => {
   });
 });
 
-//disconnect to social Acoount Twitter
-const disconnectAccountTwitter = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
-  const TwitterdisConnect = [];
-  user.social.forEach((element) => {
-    const TwitterObject = {};
-    if (element.type === 'Twitter') {
-      TwitterObject.id = user.id;
-      TwitterObject.type = element.type;
-      TwitterdisConnect.push(TwitterObject);
-    }
-  });
-  res.status(200).json({
-    success: true,
-    data: TwitterdisConnect,
-  });
-});
-
 module.exports = {
   getsocialAccounts,
   addsocialAccounts,
-  connectAccountFacebook,
-  connectAccountTwitter,
-  disconnectAccountFacebook,
-  disconnectAccountTwitter,
+  connectAccount,
+  disconnectAccount,
 };
