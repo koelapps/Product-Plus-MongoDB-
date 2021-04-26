@@ -5,7 +5,7 @@ const SocialController = require('../controllers/socialcontroller');
 const authenticate = require('../middleware/authenticate');
 
 router.post('/accounts', authenticate, SocialController.addsocialAccounts);
-router.get('/accounts', authenticate, SocialController.getsocialAccounts);
+router.get('/getaccounts', authenticate, SocialController.getsocialAccounts);
 router.post('/connect', authenticate, SocialController.connectAccount);
 router.post('/disconnect', authenticate, SocialController.disconnectAccount);
 
