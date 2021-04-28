@@ -69,19 +69,25 @@ const connectAccount = asyncHandler(async (req, res, next) => {
 //disconnect to social Acoount Facebook
 const disconnectAccount = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.body.id);
-  const AccountdisConnect = [];
-  user.social.forEach((fieldElement) => {
-    const AccountObject = {};
-    if (fieldElement.type === req.query.account) {
-      AccountObject.id = user.id;
-      AccountObject.type = fieldElement.type;
-      AccountdisConnect.push(AccountObject);
-    }
-  });
-  res.status(200).json({
-    success: true,
-    data: AccountdisConnect[0],
-  });
+  if (user) {
+    const AccountdisConnect = [];
+    user.social.forEach((fieldElement) => {
+      const AccountObject = {};
+      if (fieldElement.type === req.query.account) {
+        AccountObject.id = user.id;
+        AccountObject.type = fieldElement.type;
+        AccountdisConnect.push(AccountObject);
+      }
+    });
+    res.status(200).json({
+      success: true,
+      data: AccountdisConnect[0],
+    });
+  } else {
+    return next(
+      new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
+    );
+  }
 });
 
 module.exports = {
