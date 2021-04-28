@@ -90,11 +90,11 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 
 //update User
 const updateUser = asyncHandler(async (req, res, next) => {
-  let user = await User.findOne(req.body.id);
+  let user = await User.findById(req.body.id);
 
   if (!user) {
     return next(
-      new ErrorResponse(`Bootcamp not found with id of ${req.body.id}`, 404)
+      new ErrorResponse(`User not found with id of ${req.body.id}`, 404)
     );
   }
 
