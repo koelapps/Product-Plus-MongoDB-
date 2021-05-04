@@ -8,7 +8,7 @@ const ErrorResponse = require('../util/errorResponse');
 const { db } = require('../models/User');
 
 //show the list of users
-const getallUsers = (req, res, next) => {
+const getAllUsers = asyncHandler(async (req, res, next) => {
   User.find()
     .then((response) => {
       res.json({
@@ -20,7 +20,7 @@ const getallUsers = (req, res, next) => {
     .catch((error) => {
       res.json({ message: 'An error Occured' });
     });
-};
+});
 
 // Get single user
 const getSingleUser = asyncHandler(async (req, res, next) => {
@@ -44,6 +44,7 @@ const register = asyncHandler(async (req, res, next) => {
     password,
     dateOfBirth,
     social,
+    news,
   } = req.body;
 
   // Create user
@@ -54,6 +55,7 @@ const register = asyncHandler(async (req, res, next) => {
     password,
     dateOfBirth,
     social,
+    news,
   });
 
   await user
@@ -232,7 +234,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 };
 
 module.exports = {
-  getallUsers,
+  getallUsers: getAllUsers,
   getSingleUser,
   register,
   login,

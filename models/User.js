@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const { link } = require('fs');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
@@ -28,6 +29,18 @@ const userSchema = new Schema(
         mid: { type: String, unique: false },
       },
     ],
+    news: {
+      date: { type: String },
+      title: { type: String },
+      count: { type: String },
+      newsFeed: {
+        headLine: { type: String },
+        description: { type: String },
+        link: { type: String },
+        category: { type: String },
+      },
+    },
+
     resetPasswordToken: String,
     resetPaswordExpire: Date,
   },

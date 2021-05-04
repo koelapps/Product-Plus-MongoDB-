@@ -6,8 +6,9 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const dotenv = require('dotenv');
 const cookieSession = require('cookie-session');
-const UserRoute = require('./routes/user');
-const SocialRoute = require('./routes/social');
+const userRoute = require('./routes/user');
+const socialRoute = require('./routes/social');
+const newsRoute = require('./routes/news');
 const connectDB = require('./config/db');
 
 dotenv.config({ path: './config/config.env' });
@@ -24,8 +25,9 @@ app.use(express.json());
 app.get('/', (req, res) => res.send('welcome to product plus'));
 
 //Route Files
-app.use('/api/v1/', UserRoute);
-app.use('/api/v1/social/', SocialRoute);
+app.use('/api/v1/', userRoute);
+app.use('/api/v1/social/', socialRoute);
+app.use('/api/v1/news/', newsRoute);
 
 const PORT = process.env.PORT || 5000;
 
