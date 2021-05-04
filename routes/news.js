@@ -5,5 +5,6 @@ const authenticate = require('../middleware/authenticate');
 
 router.post('/channel/follow', authenticate, newsController.channelFollow);
 router.get('/channel/follow/feeds', authenticate, newsController.paginateFeed);
+router.post('/channel/unfollow', authenticate, newsController.channelUnFollow);
 
 module.exports = router;

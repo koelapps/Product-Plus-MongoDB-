@@ -8,10 +8,10 @@ const xml2js = require('xml2js');
 const { maxHeaderSize } = require('http');
 const User = require('../models/User');
 
+//channel Follow
 const channelFollow = asyncHandler(async (req, res, next) => {
   const feedConfig = {
-    title:
-      'News From theHindu, TOI, BBC, TheGuardian, Economic Times India, News18 and IndiaToday',
+    title: 'News From theHindu, TOI, BBC, TheGuardian and Economic Times India',
     size: maxHeaderSize,
     feeds: [
       'https://www.thehindu.com/feeder/default.rss',
@@ -19,8 +19,6 @@ const channelFollow = asyncHandler(async (req, res, next) => {
       'http://feeds.bbci.co.uk/news/technology/rss.xml',
       'https://www.theguardian.com/uk/technology/rss',
       'https://economictimes.indiatimes.com/tech/rssfeeds/13357270.cms',
-      'https://www.news18.com/rss/tech.xml',
-      'https://www.indiatoday.in/rss/home',
     ],
     pubDate: new Date(),
   };
@@ -82,6 +80,16 @@ const channelFollow = asyncHandler(async (req, res, next) => {
   });
 });
 
+//channel unFollow
+const channelUnFollow = asyncHandler(async (req, res, next) => {
+  const news = null;
+  const connect = await User.findByIdAndUpdate(req.body.id, { news });
+  res.json({
+    success: true,
+    message: 'News Channels Removed Successfully....!',
+  });
+});
+
 //Paginate newsFeed
 const paginateFeed = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page);
@@ -126,4 +134,5 @@ const paginateFeed = asyncHandler(async (req, res, next) => {
 module.exports = {
   channelFollow,
   paginateFeed,
+  channelUnFollow,
 };
