@@ -41,6 +41,8 @@ const userSchema = new Schema(
       },
     },
 
+    pollresponse: {},
+
     resetPasswordToken: String,
     resetPaswordExpire: Date,
   },

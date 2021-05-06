@@ -6,5 +6,6 @@ router.post('/createpoll', pollController.createPoll);
 router.get('/getallpolls', pollController.getAllPolls);
 router.put('/updatepoll', pollController.updatePoll);
 router.delete('/deletepoll', pollController.deletePoll);
+router.post('/pollresponse', pollController.pollResponse);
 
 module.exports = router;
