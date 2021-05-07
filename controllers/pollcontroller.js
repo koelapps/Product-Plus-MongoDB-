@@ -87,7 +87,6 @@ const pollResponse = asyncHandler(async (req, res, next) => {
     data: result,
   });
 });
-
 module.exports = {
   createPoll,
   getAllPolls,
