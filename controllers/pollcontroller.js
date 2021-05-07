@@ -2,7 +2,8 @@ const Poll = require('../models/Poll');
 const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../util/errorResponse');
 const User = require('../models/User');
-const { pluralize } = require('mongoose');
+const { pluralize, set } = require('mongoose');
+const { db } = require('../models/User');
 
 //Create Poll
 const createPoll = asyncHandler(async (req, res, next) => {
@@ -74,9 +75,13 @@ const pollResponse = asyncHandler(async (req, res, next) => {
     finish.response = elements.response;
     result.push(finish);
   });
-  console.log(result);
-  let pollresponse = { result };
-  const user = await User.findByIdAndUpdate(req.body.user_id, { pollresponse });
+  // let pollresponse =  result ;
+  // const user = await User.findByIdAndUpdate(req.body.user_id, { pollresponse });
+  await User.findByIdAndUpdate(req.body.user_id, {
+    $push: {
+      pollresponse: result,
+    },
+  });
   res.json({
     message: 'Response Saved Succesfully',
     data: result,
