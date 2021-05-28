@@ -1,6 +1,9 @@
 const Poll = require('../models/Poll');
 const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../util/errorResponse');
+const User = require('../models/User');
+const { pluralize, set } = require('mongoose');
+const { db } = require('../models/User');
 
 //Create Poll
 const createPoll = asyncHandler(async (req, res, next) => {
@@ -51,9 +54,43 @@ const deletePoll = asyncHandler(async (req, res, next) => {
   });
 });
 
+//Poll Response
+const pollResponse = asyncHandler(async (req, res, next) => {
+  let question = await Poll.findById(req.body.question_id);
+  let poll = [];
+  await question.answer.forEach((element) => {
+    const object = {};
+    if (element.id === req.body.answer_id) {
+      object.question = question.question;
+      object.answer = element.text;
+      object.response = element.isCorrect;
+      poll.push(object);
+    }
+  });
+  let result = [];
+  poll.forEach((elements) => {
+    let finish = {};
+    finish.question = elements.question;
+    finish.answer = elements.answer;
+    finish.response = elements.response;
+    result.push(finish);
+  });
+  // let pollresponse =  result ;
+  // const user = await User.findByIdAndUpdate(req.body.user_id, { pollresponse });
+  await User.findByIdAndUpdate(req.body.user_id, {
+    $push: {
+      pollresponse: result,
+    },
+  });
+  res.json({
+    message: 'Response Saved Succesfully',
+    data: result,
+  });
+});
 module.exports = {
   createPoll,
   getAllPolls,
   updatePoll,
   deletePoll,
+  pollResponse,
 };

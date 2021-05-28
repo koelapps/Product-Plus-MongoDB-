@@ -5,7 +5,7 @@ const asyncHandler = require('../middleware/async');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../util/sendEmail');
 const ErrorResponse = require('../util/errorResponse');
-const { db } = require('../models/User');
+const { db, findById } = require('../models/User');
 
 //show the list of users
 const getAllUsers = asyncHandler(async (req, res, next) => {
@@ -37,15 +37,8 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  const {
-    firstName,
-    lastName,
-    email,
-    password,
-    dateOfBirth,
-    social,
-    news,
-  } = req.body;
+  const { firstName, lastName, email, password, dateOfBirth, social, news } =
+    req.body;
 
   // Create user
   const user = await User.create({
@@ -145,11 +138,25 @@ const logout = (req, res, next) => {
 
 //get current user
 const currentUser = asyncHandler(async (req, res, next) => {
-  const user = req.user;
+  const user = await User.findById(req.user.id);
+
+  let profile = [];
+  profile.push(user);
+
+  const data = [];
+  await profile.forEach((element) => {
+    const proc = {};
+    proc.id = element.id;
+    proc.firstName = element.firstName;
+    proc.lastName = element.lastName;
+    proc.email = element.email;
+    proc.dateOfBirth = element.dateOfBirth;
+    data.push(proc);
+  });
 
   res.status(200).json({
     success: true,
-    data: user,
+    data: data,
   });
 });
 
@@ -227,9 +234,22 @@ const sendTokenResponse = (user, statusCode, res) => {
     options.secure = true;
   }
 
+  const dataResult = [];
+  dataResult.push(user);
+  dataResult.forEach((element) => {
+    const res = {};
+    res.id = element.id;
+    res.firstName = element.firstName;
+    res.lastName = element.lastName;
+    res.email = element.email;
+    res.dob = element.dateOfBirth;
+    dataResult.push(res);
+  });
+
   res.status(statusCode).cookie('token', token, options).json({
     success: true,
     token,
+    user: dataResult[1],
   });
 };
 

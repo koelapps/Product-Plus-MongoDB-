@@ -41,6 +41,14 @@ const userSchema = new Schema(
       },
     },
 
+    pollresponse: [
+      {
+        question: { type: String },
+        answer: { type: String },
+        response: { type: Boolean },
+      },
+    ],
+
     resetPasswordToken: String,
     resetPaswordExpire: Date,
   },
