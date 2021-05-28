@@ -174,7 +174,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 
   const resetUrl = `${req.protocol}://${req.get(
     'host'
-  )}/api/resetpassword/${resetToken}`;
+  )}/api/v1/resetpassword/${resetToken}`;
 
   const message = `To reset the password copy and paste the url and make PUT request to \n\n ${resetUrl}`;
 
