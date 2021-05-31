@@ -25,72 +25,56 @@ const getSocialAccounts = asyncHandler(async (req, res, next) => {
 const addSocialAccounts = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.body.id);
 
-  if (user) {
-    const { social } = req.body;
-    const account = await User.findByIdAndUpdate(req.body.id, {
-      social,
-    });
-    res.status(200).json({
-      success: true,
-      message: 'Social Accounts Added Successfully',
-      Accounts: req.body,
-    });
-  } else {
-    return next(
-      new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
-    );
-  }
+  const { social } = req.body;
+  const account = await User.findByIdAndUpdate(req.body.id, {
+    social,
+  });
+  res.status(200).json({
+    success: true,
+    message: 'Social Accounts Added Successfully',
+    Accounts: user,
+  });
 });
 
 //connect to social Acoounts
 const connectAccount = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.body.id);
-  if (user) {
-    const accountConnect = [];
-    await user.social.forEach((fieldElement) => {
-      const account = {};
-      if (fieldElement.type === req.query.account) {
-        account.id = user.id;
-        account.type = fieldElement.type;
-        account.mid = fieldElement.mid;
-        accountConnect.push(account);
-      }
-    });
-    const connect = accountConnect[0];
-    res.status(200).json({
-      success: true,
-      data: connect,
-    });
-  } else {
-    return next(
-      new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
-    );
-  }
+
+  const accountConnect = [];
+  await user.social.forEach((fieldElement) => {
+    const account = {};
+    if (fieldElement.type === req.query.account) {
+      account.id = user.id;
+      account.type = fieldElement.type;
+      account.mid = fieldElement.mid;
+      accountConnect.push(account);
+    }
+  });
+  const connect = accountConnect[0];
+  res.status(200).json({
+    success: true,
+    data: connect,
+  });
 });
 
 //disconnect to social Acoount Facebook
 const disConnectAccount = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.body.id);
-  if (user) {
-    const accountDisConnect = [];
-    user.social.forEach((fieldElement) => {
-      const account = {};
-      if (fieldElement.type === req.query.account) {
-        account.id = user.id;
-        account.type = fieldElement.type;
-        accountDisConnect.push(account);
-      }
-    });
-    const disConnect = accountDisConnect[0];
-    res.status(200).json({
-      success: true,
-      data: disConnect,
-    });
-  } else {
-    return next(
-      new ErrorResponse(`No user found with the id of ${req.params.id}`, 404)
-    );
-  }
+
+  const accountDisConnect = [];
+  user.social.forEach((fieldElement) => {
+    const account = {};
+    if (fieldElement.type === req.query.account) {
+      account.id = user.id;
+      account.type = fieldElement.type;
+      accountDisConnect.push(account);
+    }
+  });
+  const disConnect = accountDisConnect[0];
+  res.status(200).json({
+    success: true,
+    data: disConnect,
+  });
 });
 
 module.exports = {
