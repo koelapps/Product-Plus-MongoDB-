@@ -37,35 +37,21 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  const { firstName, lastName, email, password, dateOfBirth, social, news } =
-    req.body;
+  try {
+    const user = await User.create(req.body);
 
-  // Create user
-  const user = await User.create({
-    firstName,
-    lastName,
-    email,
-    password,
-    dateOfBirth,
-    social,
-    news,
-  });
+    sendTokenResponse(user, 201, res);
 
-  await user
-    .save()
-    .then((user) => {
-      sendTokenResponse(user, 200, res);
-      res.status(200).json({
-        success: true,
-        message: 'User Added Successfully',
-      });
-    })
-    .catch((error) => {
-      res.status(404).json({
-        success: false,
-        message: `User with this mail ID is already registered`,
-      });
+    res.status(201).json({
+      success: true,
+      message: 'User Added Successfully',
     });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: `User with this mail ID is already registered`,
+    });
+  }
 });
 
 //Delete User
