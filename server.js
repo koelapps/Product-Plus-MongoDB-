@@ -10,6 +10,7 @@ const userRoute = require('./routes/user');
 const socialRoute = require('./routes/social');
 const newsRoute = require('./routes/news');
 const pollRoute = require('./routes/poll');
+const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
 const cors = require('cors');
 
@@ -32,6 +33,8 @@ app.use('/api/v1/', userRoute);
 app.use('/api/v1/social/', socialRoute);
 app.use('/api/v1/news/', newsRoute);
 app.use('/api/v1/poll/', pollRoute);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

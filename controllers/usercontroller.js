@@ -37,21 +37,35 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  try {
-    const user = await User.create(req.body);
+  const { firstName, lastName, email, password, dateOfBirth, social, news } =
+    req.body;
 
-    sendTokenResponse(user, 201, res);
+  // Create user
+  const user = await User.create({
+    firstName,
+    lastName,
+    email,
+    password,
+    dateOfBirth,
+    social,
+    news,
+  });
 
-    res.status(201).json({
-      success: true,
-      message: 'User Added Successfully',
+  await user
+    .save()
+    .then((user) => {
+      sendTokenResponse(user, 201, res);
+      res.status(200).json({
+        success: true,
+        message: 'User Added Successfully',
+      });
+    })
+    .catch((error) => {
+      res.status(404).json({
+        success: false,
+        message: `User with this mail ID is already registered`,
+      });
     });
-  } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: `User with this mail ID is already registered`,
-    });
-  }
 });
 
 //Delete User
@@ -66,7 +80,11 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 
   await user.remove();
 
-  res.status(200).json({ success: true, data: {} });
+  res.status(200).json({
+    success: true,
+    message: `User ${user.firstName} with id of ${user.id} Deleted Successfully`,
+    data: user,
+  });
 });
 
 //update User

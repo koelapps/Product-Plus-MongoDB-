@@ -7,16 +7,17 @@ const { db } = require('../models/User');
 
 //Create Poll
 const createPoll = asyncHandler(async (req, res, next) => {
-  const { question } = req.body;
-  const { answer } = req.body;
+  const { question, answer } = req.body;
 
   const poll = await Poll.create({
     question,
     answer,
   });
+
   return res.status(201).json({
-    question,
-    answer,
+    success: true,
+    message: 'Poll Added Successfully',
+    data: poll,
   });
 });
 
@@ -30,26 +31,41 @@ const getAllPolls = asyncHandler(async (req, res, next) => {
 
 //update poll using pollid
 const updatePoll = asyncHandler(async (req, res, next) => {
-  const { question, answer, text } = req.body;
-  const poll = await Poll.findByIdAndUpdate(req.body.id, {
-    question,
-    answer,
-    text,
+  let poll = await Poll.findById(req.body.id);
+
+  if (!poll) {
+    return next(
+      new ErrorResponse(`Poll not found with id of ${req.body.id}`, 404)
+    );
+  }
+
+  poll = await Poll.findByIdAndUpdate(req.body.id, req.body, {
+    new: true,
+    runValidators: true,
   });
 
-  res.json({
+  res.status(200).json({
     success: true,
     message: 'updated Successfully..',
-    data: req.body,
+    data: poll,
   });
 });
 
 //Delete poll using id
 const deletePoll = asyncHandler(async (req, res, next) => {
-  const poll = await Poll.findByIdAndDelete(req.body.id);
-  res.json({
+  const poll = await Poll.findById(req.body.id);
+
+  if (!poll) {
+    return next(
+      new ErrorResponse(`Poll not found with id of ${req.body.id}`, 404)
+    );
+  }
+
+  await poll.remove();
+
+  res.status(200).json({
     success: true,
-    message: 'Poll Deleted successfully...',
+    message: `Poll with Question '${poll.question}' Deleted Successfully`,
     data: poll,
   });
 });
