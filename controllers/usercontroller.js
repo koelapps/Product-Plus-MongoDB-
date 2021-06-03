@@ -51,21 +51,10 @@ const register = asyncHandler(async (req, res, next) => {
     news,
   });
 
-  await user
-    .save()
-    .then((user) => {
-      sendTokenResponse(user, 201, res);
-      res.status(200).json({
-        success: true,
-        message: 'User Added Successfully',
-      });
-    })
-    .catch((error) => {
-      res.status(404).json({
-        success: false,
-        message: `User with this mail ID is already registered`,
-      });
-    });
+  const message = 'User Registered Successfully..!';
+
+  await user.save();
+  sendTokenResponse(user, 201, res, message);
 });
 
 //Delete User
@@ -102,7 +91,9 @@ const updateUser = asyncHandler(async (req, res, next) => {
     runValidators: true,
   });
 
-  res.status(200).json({ success: true, data: user });
+  res
+    .status(200)
+    .json({ success: true, message: 'Updated Successfully', data: user });
 });
 
 //Login user
@@ -124,7 +115,9 @@ const login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Invalid credentials', 401));
   }
 
-  sendTokenResponse(user, 200, res);
+  const message = 'Login successfully...!';
+
+  sendTokenResponse(user, 200, res, message);
 });
 
 //Logout User
@@ -189,7 +182,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
       message,
     });
 
-    res.status(200).json({ success: true, data: 'Email sent' });
+    res.status(200).json({ success: true, message: 'Email sent' });
   } catch (err) {
     console.log(err);
     user.resetPasswordToken = undefined;
@@ -223,7 +216,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 //Sending token to the cookie
-const sendTokenResponse = (user, statusCode, res) => {
+const sendTokenResponse = (user, statusCode, res, message) => {
   // Create token
   const token = user.getSignedJwtToken();
 
@@ -242,6 +235,8 @@ const sendTokenResponse = (user, statusCode, res) => {
   dataResult.push(user);
   dataResult.forEach((element) => {
     const res = {};
+    res.message = message;
+    res.token = token;
     res.id = element.id;
     res.firstName = element.firstName;
     res.lastName = element.lastName;
@@ -253,8 +248,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 
   res.status(statusCode).cookie('token', token, options).json({
     success: true,
-    token,
-    user: dataResult[1],
+    data: dataResult[1],
   });
 };
 

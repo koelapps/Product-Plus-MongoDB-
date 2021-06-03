@@ -70,12 +70,15 @@ const channelFollow = asyncHandler(async (req, res, next) => {
   let news = { date, title, count, newsFeed };
 
   const connect = await User.findByIdAndUpdate(req.body.id, { news });
+
+  const message = 'News Channels added Successfully....!';
+
   res.json({
     success: true,
-    message: 'News Channels added Successfully....!',
-    title: title,
-    count: feedLength,
-    data: newsFeed,
+    // message: '',
+    // title: title,
+    // count: feedLength,
+    data: { message, title, feedLength, newsFeed },
     // data: result,
   });
 });
@@ -84,9 +87,10 @@ const channelFollow = asyncHandler(async (req, res, next) => {
 const channelUnFollow = asyncHandler(async (req, res, next) => {
   const news = null;
   const connect = await User.findByIdAndUpdate(req.body.id, { news });
+  const message = 'News Channels Removed Successfully....!';
   res.json({
     success: true,
-    message: 'News Channels Removed Successfully....!',
+    data: message,
   });
 });
 
@@ -123,11 +127,10 @@ const paginateFeed = asyncHandler(async (req, res, next) => {
   const date = user.news.date;
 
   results.data = feeds.toJSON().slice(startIndex, endIndex);
+  const count = limit.length;
   res.status(200).json({
     sucess: true,
-    count: limit.length,
-    userName: user.email,
-    data: { title, date, results },
+    data: { count, title, date, results },
   });
 });
 

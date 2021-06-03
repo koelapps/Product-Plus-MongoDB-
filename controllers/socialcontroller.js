@@ -12,12 +12,11 @@ const getSocialAccounts = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`No user found with the id of ${req.body.id}`, 404)
     );
   }
-  //const socialaccounts = await social.social;
+
+  const socialaccounts = await social.social;
   res.status(200).json({
     success: true,
-    id: req.body.id,
-    user: social.email,
-    socialAccounts: social.social,
+    data: socialaccounts,
   });
 });
 
@@ -31,10 +30,12 @@ const addSocialAccounts = asyncHandler(async (req, res, next) => {
       social,
     },
   });
+
+  const message = `${req.body.social[0].type} Account for ${user.firstName} Added Successfully`;
+
   res.status(200).json({
     success: true,
-    message: 'Social Accounts Added Successfully',
-    Accounts: user,
+    data: { message, social },
   });
 });
 
@@ -53,9 +54,10 @@ const connectAccount = asyncHandler(async (req, res, next) => {
     }
   });
   const connect = accountConnect[0];
+  const message = `${connect.type} is connected Successfully`;
   res.status(200).json({
     success: true,
-    data: connect,
+    data: { message, connect },
   });
 });
 
@@ -73,9 +75,12 @@ const disConnectAccount = asyncHandler(async (req, res, next) => {
     }
   });
   const disConnect = accountDisConnect[0];
+
+  const message = `${disConnect.type} is DisConnected Successfully`;
+
   res.status(200).json({
     success: true,
-    data: disConnect,
+    data: { message, disConnect },
   });
 });
 

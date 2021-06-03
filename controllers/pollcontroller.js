@@ -14,10 +14,11 @@ const createPoll = asyncHandler(async (req, res, next) => {
     answer,
   });
 
+  const message = 'Poll Added Successfully';
+
   return res.status(201).json({
     success: true,
-    message: 'Poll Added Successfully',
-    data: poll,
+    data: { message, poll },
   });
 });
 
@@ -25,7 +26,8 @@ const createPoll = asyncHandler(async (req, res, next) => {
 const getAllPolls = asyncHandler(async (req, res, next) => {
   const questions = await Poll.find();
   return res.status(200).json({
-    questions,
+    success: true,
+    data: questions,
   });
 });
 
@@ -44,10 +46,11 @@ const updatePoll = asyncHandler(async (req, res, next) => {
     runValidators: true,
   });
 
+  const message = 'updated Successfully..';
+
   res.status(200).json({
     success: true,
-    message: 'updated Successfully..',
-    data: poll,
+    data: { message, poll },
   });
 });
 
@@ -63,10 +66,11 @@ const deletePoll = asyncHandler(async (req, res, next) => {
 
   await poll.remove();
 
+  const message = `Poll with Question '${poll.question}' Deleted Successfully`;
+
   res.status(200).json({
     success: true,
-    message: `Poll with Question '${poll.question}' Deleted Successfully`,
-    data: poll,
+    data: { message, poll },
   });
 });
 
@@ -98,9 +102,11 @@ const pollResponse = asyncHandler(async (req, res, next) => {
       pollresponse: result,
     },
   });
+
+  const message = 'Response Saved Succesfully';
+
   res.json({
-    message: 'Response Saved Succesfully',
-    data: result,
+    data: { message, result },
   });
 });
 module.exports = {
