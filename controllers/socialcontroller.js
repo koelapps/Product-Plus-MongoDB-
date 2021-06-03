@@ -27,7 +27,9 @@ const addSocialAccounts = asyncHandler(async (req, res, next) => {
 
   const { social } = req.body;
   const account = await User.findByIdAndUpdate(req.body.id, {
-    social,
+    $push: {
+      social,
+    },
   });
   res.status(200).json({
     success: true,

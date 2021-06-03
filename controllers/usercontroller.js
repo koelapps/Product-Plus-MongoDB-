@@ -180,7 +180,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
     'host'
   )}/api/v1/resetpassword/${resetToken}`;
 
-  const message = `To reset the password copy and paste the url and make PUT request to \n\n ${resetUrl}`;
+  const message = `To reset the password copy and paste the url and make PUT request to \n\n http://localhost:3000/resetpassword/${resetToken} \n\n `;
 
   try {
     await sendEmail({
@@ -247,7 +247,8 @@ const sendTokenResponse = (user, statusCode, res) => {
     res.lastName = element.lastName;
     res.email = element.email;
     res.dob = element.dateOfBirth;
-    dataResult.push(res);
+    res.news = element.news;
+    +dataResult.push(res);
   });
 
   res.status(statusCode).cookie('token', token, options).json({
