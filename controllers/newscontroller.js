@@ -6,7 +6,7 @@ const ErrorResponse = require('../util/errorResponse');
 const RSSCombiner = require('rss-combiner');
 const xml2js = require('xml2js');
 const { maxHeaderSize } = require('http');
-const User = require('../models/User');
+const News = require('../models/News');
 
 //channel Follow
 const channelFollow = asyncHandler(async (req, res, next) => {
@@ -50,7 +50,6 @@ const channelFollow = asyncHandler(async (req, res, next) => {
     });
   });
 
-  const user = await User.findById(req.body.id);
   // let news = user.news;
   let newsFeed = [];
 
@@ -69,7 +68,7 @@ const channelFollow = asyncHandler(async (req, res, next) => {
   let count = feedLength;
   let news = { date, title, count, newsFeed };
 
-  const connect = await User.findByIdAndUpdate(req.body.id, { news });
+  const connect = await News.create({ news });
 
   const message = 'News Channels added Successfully....!';
 
@@ -86,7 +85,7 @@ const channelFollow = asyncHandler(async (req, res, next) => {
 //channel unFollow
 const channelUnFollow = asyncHandler(async (req, res, next) => {
   const news = null;
-  const connect = await User.findByIdAndUpdate(req.body.id, { news });
+  const connect = await News.findByIdAndUpdate(req.body.id, { news });
   const message = 'News Channels Removed Successfully....!';
   res.json({
     success: true,
@@ -101,8 +100,9 @@ const paginateFeed = asyncHandler(async (req, res, next) => {
 
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
-  const user = await User.findById(req.body.id);
+  const user = await News.findById(req.body.id);
   let feeds = user.news.newsFeed;
+  console.log(feeds);
 
   const results = {};
 
@@ -126,7 +126,7 @@ const paginateFeed = asyncHandler(async (req, res, next) => {
   const title = user.news.title;
   const date = user.news.date;
 
-  results.data = feeds.toJSON().slice(startIndex, endIndex);
+  results.data = feeds.slice(startIndex, endIndex);
   const count = limit.length;
   res.status(200).json({
     sucess: true,
