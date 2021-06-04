@@ -271,18 +271,9 @@ const sendLoginResponse = (user, statusCode, res, message) => {
     options.secure = true;
   }
 
-  const dataResult = [];
-  dataResult.push(user);
-  dataResult.forEach((element) => {
-    const res = {};
-    res.token = token;
-    res.message = message;
-    +dataResult.push(res);
-  });
-
   res.status(statusCode).cookie('token', token, options).json({
     success: true,
-    data: dataResult[1],
+    data: { token, message },
   });
 };
 
