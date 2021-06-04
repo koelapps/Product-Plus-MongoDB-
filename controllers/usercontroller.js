@@ -54,7 +54,7 @@ const register = asyncHandler(async (req, res, next) => {
   const message = 'User Registered Successfully..!';
 
   await user.save();
-  sendTokenResponse(user, 201, res, message);
+  sendRegisterResponse(user, 201, res, message);
 });
 
 //Delete User
@@ -117,7 +117,7 @@ const login = asyncHandler(async (req, res, next) => {
 
   const message = 'Login successfully...!';
 
-  sendTokenResponse(user, 200, res, message);
+  sendLoginResponse(user, 200, res, message);
 });
 
 //Logout User
@@ -127,9 +127,11 @@ const logout = (req, res, next) => {
     httpOnly: true,
   });
 
+  const message = 'Logout Success!!';
+
   res.status(200).json({
     success: true,
-    message: 'Logout Success!!',
+    data: { message },
   });
 };
 
@@ -212,11 +214,13 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
   await user.save();
-  sendTokenResponse(user, 200, res);
+  const message = 'Password changed successfully';
+  sendResetPasswordResponse(user, 200, res, message);
 });
 
-//Sending token to the cookie
-const sendTokenResponse = (user, statusCode, res, message) => {
+//Responses
+
+const sendRegisterResponse = (user, statusCode, res, message) => {
   // Create token
   const token = user.getSignedJwtToken();
 
@@ -243,6 +247,66 @@ const sendTokenResponse = (user, statusCode, res, message) => {
     res.email = element.email;
     res.dob = element.dateOfBirth;
     res.news = element.news;
+    +dataResult.push(res);
+  });
+
+  res.status(statusCode).cookie('token', token, options).json({
+    success: true,
+    data: dataResult[1],
+  });
+};
+
+const sendLoginResponse = (user, statusCode, res, message) => {
+  // Create token
+  const token = user.getSignedJwtToken();
+
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    options.secure = true;
+  }
+
+  const dataResult = [];
+  dataResult.push(user);
+  dataResult.forEach((element) => {
+    const res = {};
+    res.token = token;
+    res.message = message;
+    +dataResult.push(res);
+  });
+
+  res.status(statusCode).cookie('token', token, options).json({
+    success: true,
+    data: dataResult[1],
+  });
+};
+
+const sendResetPasswordResponse = (user, statusCode, res, message) => {
+  // Create token
+  const token = user.getSignedJwtToken();
+
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    options.secure = true;
+  }
+
+  const dataResult = [];
+  dataResult.push(user);
+  dataResult.forEach((element) => {
+    const res = {};
+    res.token = token;
+    res.message = message;
     +dataResult.push(res);
   });
 
