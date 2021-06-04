@@ -115,9 +115,7 @@ const login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Invalid credentials', 401));
   }
 
-  const message = 'Login successfully...!';
-
-  sendLoginResponse(user, 200, res, message);
+  sendLoginResponse(user, 200, res);
 });
 
 //Logout User
@@ -256,7 +254,7 @@ const sendRegisterResponse = (user, statusCode, res, message) => {
   });
 };
 
-const sendLoginResponse = (user, statusCode, res, message) => {
+const sendLoginResponse = (user, statusCode, res) => {
   // Create token
   const token = user.getSignedJwtToken();
 
@@ -271,14 +269,7 @@ const sendLoginResponse = (user, statusCode, res, message) => {
     options.secure = true;
   }
 
-  // const dataResult = [];
-  // dataResult.push(user);
-  // dataResult.forEach((element) => {
-  //   const res = {};
-  //   res.token = token;
-  //   res.message = message;
-  //   +dataResult.push(res);
-  // });
+  const message = 'Login successfully...!';
 
   res.status(statusCode).cookie('token', token, options).json({
     success: true,
