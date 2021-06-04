@@ -104,6 +104,7 @@ const login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Please provide an email and password', 400));
   }
   const user = await User.findOne({ email }).select('+password');
+  console.log(user);
 
   if (!user) {
     return next(new ErrorResponse('Invalid credentials', 401));
