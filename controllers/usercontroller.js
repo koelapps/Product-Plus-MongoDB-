@@ -254,8 +254,12 @@ const sendRegisterResponse = (user, statusCode, res, message) => {
   });
 };
 
+<<<<<<< HEAD
 const sendLoginResponse = (user, statusCode, res) => {
   // Create token
+=======
+const sendLoginResponse = (user, statusCode, res, message) => {
+>>>>>>> 6eebcaeee24ef55488b43034f1e99ea15e88dffc
   const token = user.getSignedJwtToken();
 
   const options = {
@@ -269,8 +273,11 @@ const sendLoginResponse = (user, statusCode, res) => {
     options.secure = true;
   }
 
+<<<<<<< HEAD
   const message = 'Login successfully...!';
 
+=======
+>>>>>>> 6eebcaeee24ef55488b43034f1e99ea15e88dffc
   res.status(statusCode).cookie('token', token, options).json({
     success: true,
     data: { token, message },
