@@ -30,17 +30,6 @@ const userSchema = new Schema(
         mid: { type: String, unique: false },
       },
     ],
-    news: {
-      date: { type: String },
-      title: { type: String },
-      count: { type: String },
-      newsFeed: {
-        headLine: { type: String },
-        description: { type: String },
-        link: { type: String },
-        category: { type: String },
-      },
-    },
 
     pollresponse: [
       {

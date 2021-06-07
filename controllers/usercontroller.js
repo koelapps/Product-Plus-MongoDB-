@@ -257,7 +257,6 @@ const sendRegisterResponse = (user, statusCode, res, message) => {
 };
 
 const sendLoginResponse = (user, statusCode, res, message) => {
-  // Create token
   const token = user.getSignedJwtToken();
 
   const options = {
@@ -270,15 +269,6 @@ const sendLoginResponse = (user, statusCode, res, message) => {
   if (process.env.NODE_ENV === 'production') {
     options.secure = true;
   }
-
-  // const dataResult = [];
-  // dataResult.push(user);
-  // dataResult.forEach((element) => {
-  //   const res = {};
-  //   res.token = token;
-  //   res.message = message;
-  //   +dataResult.push(res);
-  // });
 
   res.status(statusCode).cookie('token', token, options).json({
     success: true,
