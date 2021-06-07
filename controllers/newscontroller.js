@@ -100,9 +100,9 @@ const channelUnFollow = asyncHandler(async (req, res, next) => {
 const paginateFeed = asyncHandler(async (req, res, next) => {
   let page = parseInt(req.query.page);
   let limit = parseInt(req.query.limit);
-  const results = await News.find()
+  const results = await News.find({ category: req.query.category })
     .skip((page - 1) * limit)
-    .select('')
+    .select()
     .limit(limit * 1);
   res.status(200).json({ success: true, data: results });
 });
