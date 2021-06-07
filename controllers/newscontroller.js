@@ -7,6 +7,7 @@ const RSSCombiner = require('rss-combiner');
 const xml2js = require('xml2js');
 const { maxHeaderSize } = require('http');
 const News = require('../models/News');
+const { db } = require('../models/News');
 
 //channel Follow
 const channelFollow = asyncHandler(async (req, res, next) => {
@@ -33,6 +34,7 @@ const channelFollow = asyncHandler(async (req, res, next) => {
     const xml = combinedFeed.xml();
     const parser = xml2js.Parser();
     parser.parseString(xml, (err, result) => {
+      console.log(result.rss.channel[0]);
       main = result;
       follow = result.rss;
       title = follow.channel[0].title[0];
@@ -44,6 +46,7 @@ const channelFollow = asyncHandler(async (req, res, next) => {
         object.description = element.description;
         object.link = element.link;
         object.category = element.category;
+        object.date = element.pubDate;
         newsFollow.push(object);
         // console.log(newsFollow);
       });
@@ -60,15 +63,15 @@ const channelFollow = asyncHandler(async (req, res, next) => {
     object.description = element.description[0];
     object.link = element.link[0];
     object.category = element.category;
+    object.date = element.date;
 
     newsFeed.push(object);
   });
 
   let date = new Date().toString();
   let count = feedLength;
-  let news = { date, title, count, newsFeed };
 
-  const connect = await News.create({ news });
+  const connect = await News.create(newsFeed);
 
   const message = 'News Channels added Successfully....!';
 
@@ -95,43 +98,13 @@ const channelUnFollow = asyncHandler(async (req, res, next) => {
 
 //Paginate newsFeed
 const paginateFeed = asyncHandler(async (req, res, next) => {
-  const page = parseInt(req.query.page);
-  const limit = parseInt(req.query.limit);
-
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-  const user = await News.findById(req.body.id);
-  let feeds = user.news.newsFeed;
-  console.log(feeds);
-
-  const results = {};
-
-  results.currentPage = {
-    page: page,
-    limit: limit,
-  };
-
-  results.next = {
-    page: page + 1,
-    limit: limit,
-  };
-
-  if (startIndex > 0) {
-    results.previous = {
-      page: page - 1,
-      limit: limit,
-    };
-  }
-
-  const title = user.news.title;
-  const date = user.news.date;
-
-  results.data = feeds.slice(startIndex, endIndex);
-  const count = limit.length;
-  res.status(200).json({
-    sucess: true,
-    data: { count, title, date, results },
-  });
+  let page = 1;
+  let limit = 10;
+  const results = await News.find()
+    .skip((page - 1) * limit)
+    .select('')
+    .limit(limit * 1);
+  res.status(200).json({ success: true, data: results });
 });
 
 module.exports = {
