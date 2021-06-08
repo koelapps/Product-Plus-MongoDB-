@@ -16,10 +16,18 @@ const userSchema = new Schema(
     email: {
       type: String,
       unique: true,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        'Please add a valid email address',
+      ],
     },
     password: {
       type: String,
       select: false,
+    },
+    gender: {
+      type: String,
+      enum: ['male', 'female', 'prefer not to say'],
     },
     dateOfBirth: {
       type: String,
