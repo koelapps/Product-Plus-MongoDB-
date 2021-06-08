@@ -37,8 +37,16 @@ const getSingleUser = asyncHandler(async (req, res, next) => {
 
 //Register User
 const register = asyncHandler(async (req, res, next) => {
-  const { firstName, lastName, email, password, dateOfBirth, social, news } =
-    req.body;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    gender,
+    dateOfBirth,
+    social,
+    news,
+  } = req.body;
 
   // Create user
   const user = await User.create({
@@ -46,6 +54,7 @@ const register = asyncHandler(async (req, res, next) => {
     lastName,
     email,
     password,
+    gender,
     dateOfBirth,
     social,
     news,
@@ -243,8 +252,8 @@ const sendRegisterResponse = (user, statusCode, res, message) => {
     res.firstName = element.firstName;
     res.lastName = element.lastName;
     res.email = element.email;
+    res.gender = element.gender;
     res.dob = element.dateOfBirth;
-    res.news = element.news;
     +dataResult.push(res);
   });
 
@@ -254,8 +263,7 @@ const sendRegisterResponse = (user, statusCode, res, message) => {
   });
 };
 
-const sendLoginResponse = (user, statusCode, res) => {
-  // Create token
+const sendLoginResponse = (user, statusCode, res, message) => {
   const token = user.getSignedJwtToken();
 
   const options = {
@@ -269,11 +277,24 @@ const sendLoginResponse = (user, statusCode, res) => {
     options.secure = true;
   }
 
-  const message = 'Login successfully...!';
+  const dataResult = [];
+  dataResult.push(user);
+  dataResult.forEach((element) => {
+    const res = {};
+    res.message = message;
+    res.token = token;
+    res.id = element.id;
+    res.firstName = element.firstName;
+    res.lastName = element.lastName;
+    res.email = element.email;
+    res.dob = element.dateOfBirth;
+    res.gender = element.gender;
+    +dataResult.push(res);
+  });
 
   res.status(statusCode).cookie('token', token, options).json({
     success: true,
-    data: { token, message },
+    data: dataResult[1],
   });
 };
 
@@ -303,7 +324,7 @@ const sendResetPasswordResponse = (user, statusCode, res, message) => {
 
   res.status(statusCode).cookie('token', token, options).json({
     success: true,
-    data: dataResult[1],
+    data: { message, token },
   });
 };
 
