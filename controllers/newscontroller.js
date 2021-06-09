@@ -34,7 +34,6 @@ const channelFollow = asyncHandler(async (req, res, next) => {
     const xml = combinedFeed.xml();
     const parser = xml2js.Parser();
     parser.parseString(xml, (err, result) => {
-      console.log(result.rss.channel[0]);
       main = result;
       follow = result.rss;
       title = follow.channel[0].title[0];
@@ -53,6 +52,8 @@ const channelFollow = asyncHandler(async (req, res, next) => {
     });
   });
 
+  //{ Bluto: Science, Cycling: Lifecycle, Running: Lifecycle }
+
   // let news = user.news;
   let newsFeed = [];
 
@@ -64,7 +65,6 @@ const channelFollow = asyncHandler(async (req, res, next) => {
     object.link = element.link[0];
     object.category = element.category;
     object.date = element.date;
-
     newsFeed.push(object);
   });
 
@@ -100,7 +100,7 @@ const channelUnFollow = asyncHandler(async (req, res, next) => {
 const paginateFeed = asyncHandler(async (req, res, next) => {
   let page = parseInt(req.query.page);
   let limit = parseInt(req.query.limit);
-  
+
   const results = await News.find({ category: req.query.category })
     .skip((page - 1) * limit)
     .select()
