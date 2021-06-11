@@ -8,18 +8,23 @@ const xml2js = require('xml2js');
 const { maxHeaderSize } = require('http');
 const News = require('../models/News');
 const { db } = require('../models/News');
+const { set } = require('mongoose');
+const { group, groupEnd, groupCollapsed } = require('console');
+const groupArray = require('group-array');
+const groupBy = require('group-array-by');
 
 //channel Follow
 const channelFollow = asyncHandler(async (req, res, next) => {
   const feedConfig = {
     title: 'News From theHindu, TOI, BBC, TheGuardian and Economic Times India',
-    size: maxHeaderSize,
+    size: 15, //maxHeaderSize,
     feeds: [
-      'https://www.thehindu.com/feeder/default.rss',
+      'https://www.thehindu.com/news/international/feeder/default.rss',
+      'https://www.thehindu.com/news/national/feeder/default.rss',
+      'https://timesofindia.indiatimes.com/rssfeeds/1898055.cms',
       'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
       'http://feeds.bbci.co.uk/news/technology/rss.xml',
       'https://www.theguardian.com/uk/technology/rss',
-      'https://economictimes.indiatimes.com/tech/rssfeeds/13357270.cms',
     ],
     pubDate: new Date(),
   };
@@ -34,6 +39,26 @@ const channelFollow = asyncHandler(async (req, res, next) => {
     const xml = combinedFeed.xml();
     const parser = xml2js.Parser();
     parser.parseString(xml, (err, result) => {
+      let mainTags = {
+        National: [
+          'National',
+          'Andhra Pradesh',
+          'Karnataka',
+          'Tamil Nadu',
+          'Kerala',
+          'Other States',
+        ],
+        International: ['International'],
+        Environment: ['Environment'],
+        Technology: [
+          'Facebook',
+          'Technology',
+          'US news',
+          'social networking',
+          'Social media',
+          'US politics',
+        ],
+      };
       main = result;
       follow = result.rss;
       title = follow.channel[0].title[0];
@@ -46,15 +71,59 @@ const channelFollow = asyncHandler(async (req, res, next) => {
         object.link = element.link;
         object.category = element.category;
         object.date = element.pubDate;
+
+        //Tags for Feeds
+        let array = [];
+        array.push(element.category);
+        let groups;
+        let group = [];
+        if (element.category !== null) {
+          item = element.category;
+        }
+        groups = item.reduce((groups, item) => {
+          //National Feeds
+          for (let i = 0; i <= mainTags.National.length; i++) {
+            if (item === mainTags.National[i]) {
+              group = groups[item] || [];
+              group.push(item);
+              groups[group] = 'National';
+              return groups;
+            }
+          }
+          for (let i = 0; i <= mainTags.International.length; i++) {
+            if (item === mainTags.International[i]) {
+              group = groups[item] || [];
+              group.push(item);
+              groups[group] = 'International';
+              return groups;
+            }
+          }
+          for (let i = 0; i <= mainTags.Environment.length; i++) {
+            if (item === mainTags.Environment[i]) {
+              group = groups[item] || [];
+              group.push(item);
+              groups[group] = 'National';
+              return groups;
+            }
+          }
+          for (let i = 0; i <= mainTags.Technology.length; i++) {
+            if (item === mainTags.Technology[i]) {
+              group = groups[item] || [];
+            }
+          }
+          group.push(item);
+          groups[group] = 'Technology';
+          return groups;
+        }, {});
+        console.log(groups);
+
+        object.tags = groups;
+
         newsFollow.push(object);
-        // console.log(newsFollow);
       });
     });
   });
 
-  //{ Bluto: Science, Cycling: Lifecycle, Running: Lifecycle }
-
-  // let news = user.news;
   let newsFeed = [];
 
   newsFollow.forEach((element) => {
@@ -65,6 +134,7 @@ const channelFollow = asyncHandler(async (req, res, next) => {
     object.link = element.link[0];
     object.category = element.category;
     object.date = element.date;
+    object.tags = element.tags;
     newsFeed.push(object);
   });
 
@@ -101,7 +171,7 @@ const paginateFeed = asyncHandler(async (req, res, next) => {
   let page = parseInt(req.query.page);
   let limit = parseInt(req.query.limit);
 
-  const results = await News.find({ category: req.query.category })
+  const results = await News.find()
     .skip((page - 1) * limit)
     .select()
     .limit(limit * 1);
