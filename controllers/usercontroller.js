@@ -124,7 +124,9 @@ const login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Invalid credentials', 401));
   }
 
-  sendLoginResponse(user, 200, res);
+  const message = 'Login Success';
+
+  sendLoginResponse(user, 200, res, message);
 });
 
 //Logout User

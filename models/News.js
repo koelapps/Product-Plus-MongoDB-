@@ -8,6 +8,7 @@ const NewsSchema = new mongoose.Schema({
   link: { type: String },
   category: [{ type: String }],
   date: [{ type: String }],
+  tags: {},
 });
 NewsSchema.plugin(mongoosePaginate);
 
