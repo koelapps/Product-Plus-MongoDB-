@@ -115,6 +115,7 @@ const paginateFeed = asyncHandler(async (req, res, next) => {
   let limit = parseInt(req.query.limit);
 
   const results = await News.find()
+
     .skip((page - 1) * limit)
     .select()
     .limit(limit * 1);
