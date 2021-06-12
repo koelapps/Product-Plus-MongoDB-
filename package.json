@@ -29,6 +29,7 @@
     "fs": "^0.0.1-security",
     "group-array": "^1.0.0",
     "group-array-by": "^1.0.0",
+    "group-by": "^0.0.1",
     "http": "*",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.7",
