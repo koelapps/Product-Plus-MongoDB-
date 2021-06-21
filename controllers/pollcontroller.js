@@ -109,10 +109,25 @@ const pollResponse = asyncHandler(async (req, res, next) => {
     data: { message, result },
   });
 });
+
+//Paginate poll
+const paginatePoll = asyncHandler(async (req, res, next) => {
+  let page = parseInt(req.query.page);
+  let limit = parseInt(req.query.limit);
+
+  const results = await Poll.find()
+
+    .skip((page - 1) * limit)
+    .select()
+    .limit(limit * 1);
+  res.status(200).json({ success: true, data: results });
+});
+
 module.exports = {
   createPoll,
   getAllPolls,
   updatePoll,
   deletePoll,
   pollResponse,
+  paginatePoll,
 };
