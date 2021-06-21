@@ -226,7 +226,6 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 //Responses
-
 const sendRegisterResponse = (user, statusCode, res, message) => {
   // Create token
   const token = user.getSignedJwtToken();
