@@ -106,6 +106,7 @@ const pollResponse = asyncHandler(async (req, res, next) => {
   const message = 'Response Saved Succesfully';
 
   res.json({
+    success: true,
     data: { message, result },
   });
 });

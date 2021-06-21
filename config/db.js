@@ -1,4 +1,4 @@
-
+const { reject } = require('async');
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
@@ -6,10 +6,14 @@ const connectDB = async () => {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   });
 
   console.log(`MongoDB Connected: ${conn.connection.host}`.cyan.underline.bold);
 };
 
-module.exports = connectDB;
+function close() {
+  return mongoose.disconnect();
+}
+
+module.exports = { connectDB, close };
