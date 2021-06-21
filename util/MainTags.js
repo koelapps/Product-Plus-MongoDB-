@@ -143,6 +143,7 @@ let mainTags = {
   Hotstar: ['Entertainment'],
   Smartphones: ['Entertainment'],
   '3D printing': ['Technology'],
+  PlayStation: ['Entertainment', 'Games'],
 
   //Education
   Education: ['Education'],
