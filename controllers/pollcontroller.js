@@ -110,7 +110,7 @@ const pollResponse = asyncHandler(async (req, res, next) => {
   });
 });
 
-//Pagination for polls using query params
+//Pagination for polls using query params [page and limit]
 const paginatePoll = asyncHandler(async (req, res, next) => {
   let page = parseInt(req.query.page);
   let limit = parseInt(req.query.limit);
