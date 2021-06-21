@@ -1,13 +1,10 @@
-const { response, query } = require('express');
-const Parser = require('rss-parser');
-const async = require('async');
 const asyncHandler = require('../middleware/async');
-const ErrorResponse = require('../util/errorResponse');
 const RSSCombiner = require('rss-combiner');
 const xml2js = require('xml2js');
 const { maxHeaderSize } = require('http');
 const News = require('../models/News');
-const { db } = require('../models/News');
+const mainTags = require('../util/MainTags');
+const cron = require('node-cron');
 
 const mainTags = { Bluto: Science, Cycling: Lifecycle, Running: Lifecycle }
 
@@ -33,11 +30,11 @@ const channelFollow = asyncHandler(async (req, res, next) => {
   let title;
   let feedLength;
   let newsInfo;
+
   await RSSCombiner(feedConfig).then((combinedFeed) => {
     const xml = combinedFeed.xml();
     const parser = xml2js.Parser();
     parser.parseString(xml, (err, result) => {
-      console.log(result.rss.channel[0]);
       main = result;
       follow = result.rss;
       title = follow.channel[0].title[0];
@@ -50,6 +47,21 @@ const channelFollow = asyncHandler(async (req, res, next) => {
         object.description = element.description;
         object.link = element.link;
         object.category = element.category;
+        let groups;
+        let group = [];
+        let items = element.category;
+        if (items === undefined) {
+          return (items = 'null');
+        }
+
+        groups = items.reduce((groups, item) => {
+          group = groups[item] || [];
+          group.push(item);
+          groups[group] = mainTags[item];
+          return groups;
+        }, {});
+        console.log(groups);
+        object.tags = groups;
 
         let requiredTags = new Set();
 
@@ -77,25 +89,27 @@ const channelFollow = asyncHandler(async (req, res, next) => {
     object.link = element.link[0];
     object.category = element.category;
     object.date = element.date;
+    object.tags = element.tags;
 
     newsFeed.push(object);
   });
-
-  let date = new Date().toString();
-  let count = feedLength;
 
   const connect = await News.create(newsFeed);
 
   const message = 'News Channels added Successfully....!';
 
-  res.json({
-    success: true,
-    // message: '',
-    // title: title,
-    // count: feedLength,
-    data: { message, title, feedLength, newsFeed },
-    // data: result,
-  });
+  if (corns.start) {
+    return null;
+  } else {
+    res.json({
+      success: true,
+      // message: '',
+      // title: title,
+      // count: feedLength,
+      data: { message, title, feedLength, newsFeed },
+      // data: result,
+    });
+  }
 });
 
 //channel unFollow
@@ -113,12 +127,18 @@ const channelUnFollow = asyncHandler(async (req, res, next) => {
 const paginateFeed = asyncHandler(async (req, res, next) => {
   let page = parseInt(req.query.page);
   let limit = parseInt(req.query.limit);
-  
-  const results = await News.find({ category: req.query.category })
+
+  const results = await News.find()
+
     .skip((page - 1) * limit)
     .select()
     .limit(limit * 1);
   res.status(200).json({ success: true, data: results });
+});
+
+const corns = cron.schedule('00 05 * * *', function () {
+  channelFollow();
+  console.log('News Added ');
 });
 
 module.exports = {

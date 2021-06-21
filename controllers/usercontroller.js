@@ -124,7 +124,9 @@ const login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Invalid credentials', 401));
   }
 
-  sendLoginResponse(user, 200, res);
+  const message = 'Login Success';
+
+  sendLoginResponse(user, 200, res, message);
 });
 
 //Logout User
@@ -182,13 +184,11 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
     'host'
   )}/api/v1/resetpassword/${resetToken}`;
 
-  const message = `To reset the password copy and paste the url and make PUT request to \n\n http://localhost:3000/resetpassword/${resetToken} \n\n `;
-
   try {
     await sendEmail({
       email: user.email,
-      subject: 'Password reset token',
-      message,
+      subject: 'Password reset token (KOEL APPS)',
+      html: `<h1>Welcome to Koel Apps</h1><br /><br /><h2>To Reset Password</h2><br /></<br/><a href="http://localhost:3000/resetpassword/${resetToken}" type="button">Click Here</a><h3 style="color:red;">to Reset the Password</h3><br /><h3> or Use the Token Below</h3><br /><h2> ${resetToken}</h2> `,
     });
 
     res.status(200).json({ success: true, message: 'Email sent' });
@@ -226,7 +226,6 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 //Responses
-
 const sendRegisterResponse = (user, statusCode, res, message) => {
   // Create token
   const token = user.getSignedJwtToken();
