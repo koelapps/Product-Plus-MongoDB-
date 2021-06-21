@@ -6,8 +6,6 @@ const News = require('../models/News');
 const mainTags = require('../util/MainTags');
 const cron = require('node-cron');
 
-const mainTags = { Bluto: Science, Cycling: Lifecycle, Running: Lifecycle }
-
 //channel Follow
 const channelFollow = asyncHandler(async (req, res, next) => {
 
@@ -62,15 +60,6 @@ const channelFollow = asyncHandler(async (req, res, next) => {
         }, {});
         console.log(groups);
         object.tags = groups;
-
-        let requiredTags = new Set();
-
-        element.category.forEach((item) => {
-          requiredTags.add(mainTags[item])
-        })
-
-        object.tags = requiredTags
-
         object.date = element.pubDate;
         newsFollow.push(object);
         // console.log(newsFollow);
