@@ -145,6 +145,7 @@ let mainTags = {
   '3D printing': ['Technology'],
   PlayStation: ['Entertainment', 'Games'],
 
+
   //Education
   Education: ['Education'],
 

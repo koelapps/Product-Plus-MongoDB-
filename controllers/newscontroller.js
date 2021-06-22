@@ -16,6 +16,7 @@ const feed = [
 
 //channel Follow
 const channelFollow = asyncHandler(async (req, res, next) => {
+
   const feedConfig = {
     title: 'News From theHindu, TOI, BBC, TheGuardian and Economic Times India',
     size: maxHeaderSize,
@@ -39,6 +40,7 @@ const channelFollow = asyncHandler(async (req, res, next) => {
       title = follow.channel[0].title[0];
       newsInfo = result.rss.channel[0].item;
       feedLength = newsInfo.length;
+
       newsInfo.forEach((element) => {
         const object = {};
         object.headLine = element.title;
@@ -59,7 +61,6 @@ const channelFollow = asyncHandler(async (req, res, next) => {
           return groups;
         }, {});
         object.tags = groups;
-
         object.date = element.pubDate;
         newsFollow.push(object);
         // console.log(newsFollow);
